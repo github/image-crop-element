@@ -42,7 +42,8 @@ ImageCropPrototype.attachedCallback = function() {
   }
 
   host.addEventListener('mouseleave', stopUpdate)
-  shadowRoot.addEventListener('mouseup', stopUpdate)
+  host.addEventListener('mouseup', stopUpdate)
+  // This is on shadow root so we can tell apart the event target
   shadowRoot.addEventListener('mousedown', startUpdate)
 
   function stopUpdate() {
