@@ -21,7 +21,7 @@
     var minWidth = 10;
     var host = this;
     var shadowRoot = host.attachShadow({ mode: 'open' });
-    shadowRoot.innerHTML = '\n    <style>\n      :host { display: block; }\n      .crop-wrapper { position: relative; }\n      .crop-container {\n        user-select: none;\n        position: absolute;\n        overflow: hidden;\n        z-index: 1;\n        top: 0;\n        width: 100%;\n        height: 100%;\n      }\n\n      .crop-box {\n        position: absolute;\n        border: 1px dashed #fff;\n        box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n        box-sizing: border-box;\n      }\n    </style>\n    <div class="crop-wrapper">\n      <img src="' + host.getAttribute('src') + '" width="100%">\n      <div class="crop-container"><div class="crop-box"></div></div>\n    </div>\n    <slot></slot>\n  ';
+    shadowRoot.innerHTML = '\n    <style>\n      :host { display: block; }\n      .crop-wrapper { position: relative; }\n      .crop-container {\n        user-select: none;\n        position: absolute;\n        overflow: hidden;\n        z-index: 1;\n        top: 0;\n        width: 100%;\n        height: 100%;\n        font-size: 0;\n      }\n\n      .crop-box {\n        position: absolute;\n        border: 1px dashed #fff;\n        box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n        box-sizing: border-box;\n      }\n    </style>\n    <div class="crop-wrapper">\n      <img src="' + host.getAttribute('src') + '" width="100%">\n      <div class="crop-container"><div class="crop-box"></div></div>\n    </div>\n    <slot></slot>\n  ';
     var image = shadowRoot.querySelector('img');
     var box = shadowRoot.querySelector('.crop-box');
 
@@ -30,6 +30,8 @@
       startX = (image.width - side) / 2;
       startY = (image.height - side) / 2;
       updateDimensions(side, side);
+
+      host.dispatchEvent(new CustomEvent('crop:init'));
     };
 
     host.addEventListener('mouseleave', stopUpdate);

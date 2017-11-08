@@ -17,6 +17,7 @@ ImageCropPrototype.attachedCallback = function() {
         top: 0;
         width: 100%;
         height: 100%;
+        font-size: 0;
       }
 
       .crop-box {
@@ -40,6 +41,8 @@ ImageCropPrototype.attachedCallback = function() {
     startX = (image.width - side) / 2
     startY = (image.height - side) / 2
     updateDimensions(side, side)
+
+    host.dispatchEvent(new CustomEvent('crop:init'))
   }
 
   host.addEventListener('mouseleave', stopUpdate)
