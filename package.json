@@ -4,9 +4,13 @@
   "description": "Select area for cropping an image. This does not actually crop.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "eslint index.js"
   },
   "keywords": ["crop", "image"],
   "author": "Mu-An Chiou",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^4.10.0",
+    "eslint-plugin-github": "^0.19.0"
+  }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 function crop(selector, onUpdate) {
   let startX, startY
 
@@ -14,8 +15,8 @@ function crop(selector, onUpdate) {
   box.classList.add('crop-box')
 
   const side = Math.round((image.width > image.height ? image.height : image.width) * 0.9)
-  startX = (image.width - side)/2
-  startY = (image.height - side)/2
+  startX = (image.width - side) / 2
+  startY = (image.height - side) / 2
   updateDimensions(side, side)
 
   container.append(box)
@@ -49,11 +50,7 @@ function crop(selector, onUpdate) {
 
   function updateDimensions(deltaX, deltaY) {
     let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), minWidth)
-    newSide = Math.min(
-      newSide,
-      (deltaY > 0 ? image.height - startY : startY),
-      (deltaX > 0 ? image.width - startX : startX),
-    )
+    newSide = Math.min(newSide, deltaY > 0 ? image.height - startY : startY, deltaX > 0 ? image.width - startX : startX)
 
     const x = Math.max(0, deltaX > 0 ? startX : startX - newSide)
     const y = Math.max(0, deltaY > 0 ? startY : startY - newSide)
@@ -63,7 +60,7 @@ function crop(selector, onUpdate) {
     box.style.width = newSide
     box.style.height = newSide
 
-    onUpdate({x: x, y: y, width: newSide, height: newSide})
+    onUpdate({x, y, width: newSide, height: newSide})
   }
 
   function moveCropArea(event) {
@@ -72,7 +69,7 @@ function crop(selector, onUpdate) {
     box.style.left = x
     box.style.top = y
 
-    onUpdate({x: x, y: y, width: box.offsetWidth, height: box.offsetHeight})
+    onUpdate({x, y, width: box.offsetWidth, height: box.offsetHeight})
   }
 
   function updateCropArea(event) {
