@@ -31,7 +31,7 @@
       startY = (image.height - side) / 2;
       updateDimensions(side, side);
 
-      host.dispatchEvent(new CustomEvent('crop:init'));
+      host.dispatchEvent(new CustomEvent('crop:init', { bubbles: true }));
     };
 
     host.addEventListener('mouseleave', stopUpdate);
