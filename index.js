@@ -1,7 +1,7 @@
 const ImageCropPrototype = Object.create(HTMLElement.prototype)
 
 ImageCropPrototype.attachedCallback = function() {
-  let startX, startY, rect
+  let startX, startY
   const minWidth = 10
   const host = this
   const shadowRoot = host.attachShadow({mode: 'open'})
@@ -36,7 +36,6 @@ ImageCropPrototype.attachedCallback = function() {
   const box = shadowRoot.querySelector('.crop-box')
 
   image.onload = function() {
-    rect = host.getBoundingClientRect()
     const side = Math.round((image.width > image.height ? image.height : image.width) * 0.9)
     startX = (image.width - side) / 2
     startY = (image.height - side) / 2
@@ -60,9 +59,9 @@ ImageCropPrototype.attachedCallback = function() {
     } else {
       // Change crop area
       host.addEventListener('mousemove', updateCropArea)
-
-      startX = event.pageX - rect.x
-      startY = event.pageY - rect.y
+      const rect = host.getBoundingClientRect()
+      startX = event.pageX - rect.x - window.scrollX
+      startY = event.pageY - rect.y - window.scrollY
       box.style.left = `${startX}px`
       box.style.top = `${startY}px`
       box.style.width = `${minWidth}px`
@@ -94,8 +93,9 @@ ImageCropPrototype.attachedCallback = function() {
   }
 
   function updateCropArea(event) {
-    const deltaX = event.pageX - startX - rect.x
-    const deltaY = event.pageY - startY - rect.y
+    const rect = host.getBoundingClientRect()
+    const deltaX = event.pageX - startX - rect.x - window.scrollX
+    const deltaY = event.pageY - startY - rect.y - window.scrollY
     updateDimensions(deltaX, deltaY)
   }
 
