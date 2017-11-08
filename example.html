@@ -1,0 +1,22 @@
+<!doctype>
+<html lang="en">
+<head>
+  <link href="index.css" rel="stylesheet">
+  <title>crop</title>
+</head>
+<body style="text-align: center">
+  <img src="ams.jpg" alt="" width="500">
+  <p id="result"></p>
+
+  <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript">
+    const textContainer = document.getElementById('result')
+    crop('img', function(result) {
+      textContainer.textContent = ''
+      for(const key in result) {
+        textContainer.textContent += `${key}: ${result[key]} `
+      }
+    })
+  </script>
+</body>
+</html>

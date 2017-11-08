@@ -1,0 +1,13 @@
+.crop-container {
+  user-select: none;
+  position: absolute;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.crop-box {
+  position: absolute;
+  border: 1px dashed #fff;
+  box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);
+  box-sizing: border-box;
+}

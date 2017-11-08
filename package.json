@@ -1,0 +1,12 @@
+{
+  "name": "crop",
+  "version": "1.0.0",
+  "description": "Select area for cropping an image. This does not actually crop.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["crop", "image"],
+  "author": "Mu-An Chiou",
+  "license": "MIT"
+}
