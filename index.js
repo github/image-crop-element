@@ -79,7 +79,7 @@ ImageCropPrototype.attachedCallback = function() {
     box.style.top = y
     box.style.width = newSide
     box.style.height = newSide
-    host.dispatchEvent(new CustomEvent('crop:change', {bubbles: true, detail: {x, y, width: newSide, height: newSide}}))
+    fireChangeEvent({x, y, width: newSide, height: newSide})
   }
 
   function moveCropArea(event) {
@@ -88,15 +88,22 @@ ImageCropPrototype.attachedCallback = function() {
     box.style.left = x
     box.style.top = y
 
-    host.dispatchEvent(
-      new CustomEvent('crop:change', {bubbles: true, detail: {x, y, width: box.offsetWidth, height: box.offsetHeight}})
-    )
+    fireChangeEvent({x, y, width: box.offsetWidth, height: box.offsetHeight})
   }
 
   function updateCropArea(event) {
     const deltaX = event.pageX - startX - host.offsetLeft
     const deltaY = event.pageY - startY - host.offsetTop
     updateDimensions(deltaX, deltaY)
+  }
+
+  function fireChangeEvent(result) {
+    const ratio = image.naturalWidth / image.width
+    for (const key in result) {
+      result[key] = Math.round(result[key] * ratio)
+    }
+
+    host.dispatchEvent(new CustomEvent('crop:change', {bubbles: true, detail: result}))
   }
 }
 
