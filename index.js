@@ -1,7 +1,7 @@
 const ImageCropPrototype = Object.create(HTMLElement.prototype)
 
 ImageCropPrototype.attachedCallback = function() {
-  let startX, startY
+  let startX, startY, rect
   const minWidth = 10
   const host = this
   const shadowRoot = host.attachShadow({mode: 'open'})
@@ -34,7 +34,9 @@ ImageCropPrototype.attachedCallback = function() {
   `
   const image = shadowRoot.querySelector('img')
   const box = shadowRoot.querySelector('.crop-box')
+
   image.onload = function() {
+    rect = host.getBoundingClientRect()
     const side = Math.round((image.width > image.height ? image.height : image.width) * 0.9)
     startX = (image.width - side) / 2
     startY = (image.height - side) / 2
@@ -59,12 +61,12 @@ ImageCropPrototype.attachedCallback = function() {
       // Change crop area
       host.addEventListener('mousemove', updateCropArea)
 
-      startX = event.pageX - host.offsetLeft
-      startY = event.pageY - host.offsetTop
-      box.style.left = startX
-      box.style.top = startY
-      box.style.width = minWidth
-      box.style.height = minWidth
+      startX = event.pageX - rect.x
+      startY = event.pageY - rect.y
+      box.style.left = `${startX}px`
+      box.style.top = `${startY}px`
+      box.style.width = `${minWidth}px`
+      box.style.height = `${minWidth}px`
     }
   }
 
@@ -75,25 +77,25 @@ ImageCropPrototype.attachedCallback = function() {
     const x = Math.max(0, deltaX > 0 ? startX : startX - newSide)
     const y = Math.max(0, deltaY > 0 ? startY : startY - newSide)
 
-    box.style.left = x
-    box.style.top = y
-    box.style.width = newSide
-    box.style.height = newSide
+    box.style.left = `${x}px`
+    box.style.top = `${y}px`
+    box.style.width = `${newSide}px`
+    box.style.height = `${newSide}px`
     fireChangeEvent({x, y, width: newSide, height: newSide})
   }
 
   function moveCropArea(event) {
     const x = Math.min(Math.max(0, box.offsetLeft + event.movementX), image.width - box.offsetWidth)
     const y = Math.min(Math.max(0, box.offsetTop + event.movementY), image.height - box.offsetHeight)
-    box.style.left = x
-    box.style.top = y
+    box.style.left = `${x}px`
+    box.style.top = `${y}px`
 
     fireChangeEvent({x, y, width: box.offsetWidth, height: box.offsetHeight})
   }
 
   function updateCropArea(event) {
-    const deltaX = event.pageX - startX - host.offsetLeft
-    const deltaY = event.pageY - startY - host.offsetTop
+    const deltaX = event.pageX - startX - rect.x
+    const deltaY = event.pageY - startY - rect.y
     updateDimensions(deltaX, deltaY)
   }
 
