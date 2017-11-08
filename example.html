@@ -15,15 +15,13 @@
   <image-crop src="floyen.jpg" class="wrapper"><code></code></image-crop>
 
   <script type="text/javascript">
-    for (const crop of document.querySelectorAll('image-crop')) {
-      const textContainer = crop.querySelector('code')
-      crop.addEventListener('crop:change', function(event) {
-        textContainer.textContent = ''
-        for(const key in event.detail) {
-          textContainer.textContent += `${key}: ${event.detail[key]} `
-        }
-      })
-    }
+    document.addEventListener('crop:change', function(event) {
+      const textContainer = event.target.querySelector('code')
+      textContainer.textContent = ''
+      for(const key in event.detail) {
+        textContainer.textContent += `${key}: ${event.detail[key]} `
+      }
+    })
   </script>
 </body>
 </html>
