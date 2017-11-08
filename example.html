@@ -1,22 +1,29 @@
 <!doctype>
 <html lang="en">
 <head>
-  <link href="index.css" rel="stylesheet">
+  <style>
+    .wrapper {
+      width: 500px;
+      margin: 30px auto;
+    }
+  </style>
+  <script type="text/javascript" src="index.js"></script>
   <title>crop</title>
 </head>
-<body style="text-align: center">
-  <img src="ams.jpg" alt="" width="500">
-  <p id="result"></p>
+<body>
+  <image-crop src="ams.jpg" id="crop" class="wrapper"><code></code></image-crop>
+  <image-crop src="floyen.jpg" id="crop" class="wrapper"><code></code></image-crop>
 
-  <script type="text/javascript" src="index.js"></script>
   <script type="text/javascript">
-    const textContainer = document.getElementById('result')
-    crop('img', function(result) {
-      textContainer.textContent = ''
-      for(const key in result) {
-        textContainer.textContent += `${key}: ${result[key]} `
-      }
-    })
+    for (const crop of document.querySelectorAll('image-crop')) {
+      const textContainer = crop.querySelector('code')
+      crop.addEventListener('crop:change', function(event) {
+        textContainer.textContent = ''
+        for(const key in event.detail) {
+          textContainer.textContent += `${key}: ${event.detail[key]} `
+        }
+      })
+    }
   </script>
 </body>
 </html>

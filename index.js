@@ -1,33 +1,52 @@
-/* eslint-disable no-unused-vars */
-function crop(selector, onUpdate) {
+const ImageCropPrototype = Object.create(HTMLElement.prototype)
+
+ImageCropPrototype.attachedCallback = function() {
   let startX, startY
-
   const minWidth = 10
-  const image = document.querySelector(selector)
-  const container = document.createElement('div')
-  container.classList.add('crop-container')
-  container.style.top = image.offsetTop
-  container.style.left = image.offsetLeft
-  container.style.width = image.width
-  container.style.height = image.height
+  const host = this
+  const shadowRoot = host.attachShadow({mode: 'open'})
+  shadowRoot.innerHTML = `
+    <style>
+      :host { display: block; }
+      .crop-wrapper { position: relative; }
+      .crop-container {
+        user-select: none;
+        position: absolute;
+        overflow: hidden;
+        z-index: 1;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
 
-  const box = document.createElement('div')
-  box.classList.add('crop-box')
+      .crop-box {
+        position: absolute;
+        border: 1px dashed #fff;
+        box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);
+        box-sizing: border-box;
+      }
+    </style>
+    <div class="crop-wrapper">
+      <img src="${host.getAttribute('src')}" width="100%">
+      <div class="crop-container"><div class="crop-box"></div></div>
+    </div>
+    <slot></slot>
+  `
+  const image = shadowRoot.querySelector('img')
+  const box = shadowRoot.querySelector('.crop-box')
+  image.onload = function() {
+    const side = Math.round((image.width > image.height ? image.height : image.width) * 0.9)
+    startX = (image.width - side) / 2
+    startY = (image.height - side) / 2
+    updateDimensions(side, side)
+  }
 
-  const side = Math.round((image.width > image.height ? image.height : image.width) * 0.9)
-  startX = (image.width - side) / 2
-  startY = (image.height - side) / 2
-  updateDimensions(side, side)
-
-  container.append(box)
-  image.insertAdjacentElement('beforebegin', container)
-
-  container.addEventListener('mouseup', stopUpdate)
-  container.addEventListener('mouseleave', stopUpdate)
-  container.addEventListener('mousedown', startUpdate)
+  host.addEventListener('mouseleave', stopUpdate)
+  shadowRoot.addEventListener('mouseup', stopUpdate)
+  shadowRoot.addEventListener('mousedown', startUpdate)
 
   function stopUpdate() {
-    container.removeEventListener('mousemove', updateCropArea)
+    host.removeEventListener('mousemove', updateCropArea)
     box.removeEventListener('mousemove', moveCropArea)
   }
 
@@ -37,10 +56,10 @@ function crop(selector, onUpdate) {
       box.addEventListener('mousemove', moveCropArea)
     } else {
       // Change crop area
-      container.addEventListener('mousemove', updateCropArea)
+      host.addEventListener('mousemove', updateCropArea)
 
-      startX = event.pageX - image.offsetLeft
-      startY = event.pageY - image.offsetTop
+      startX = event.pageX - host.offsetLeft
+      startY = event.pageY - host.offsetTop
       box.style.left = startX
       box.style.top = startY
       box.style.width = minWidth
@@ -59,8 +78,7 @@ function crop(selector, onUpdate) {
     box.style.top = y
     box.style.width = newSide
     box.style.height = newSide
-
-    onUpdate({x, y, width: newSide, height: newSide})
+    host.dispatchEvent(new CustomEvent('crop:change', {detail: {x, y, width: newSide, height: newSide}}))
   }
 
   function moveCropArea(event) {
@@ -69,12 +87,18 @@ function crop(selector, onUpdate) {
     box.style.left = x
     box.style.top = y
 
-    onUpdate({x, y, width: box.offsetWidth, height: box.offsetHeight})
+    host.dispatchEvent(
+      new CustomEvent('crop:change', {detail: {x, y, width: box.offsetWidth, height: box.offsetHeight}})
+    )
   }
 
   function updateCropArea(event) {
-    const deltaX = event.pageX - startX - image.offsetLeft
-    const deltaY = event.pageY - startY - image.offsetTop
+    const deltaX = event.pageX - startX - host.offsetLeft
+    const deltaY = event.pageY - startY - host.offsetTop
     updateDimensions(deltaX, deltaY)
   }
 }
+
+window.ImageCropElement = document.registerElement('image-crop', {
+  prototype: ImageCropPrototype
+})
