@@ -83,22 +83,21 @@ ImageCropPrototype.attachedCallback = function() {
       box.addEventListener('mousemove', moveCropArea)
     } else {
       // Change crop area
-      const rect = host.getBoundingClientRect()
-      const isDragHandle = event.target.classList.contains('handle')
-      startX = event.pageX - rect.x - window.scrollX
-      startY = event.pageY - rect.y - window.scrollY
-
-      if (isDragHandle) {
-        startX = startX + (event.target.className.match(/-right/) ? 0 - box.offsetWidth : box.offsetWidth)
-        startY = startY + (event.target.className.match(/bottom-/) ? 0 - box.offsetHeight : box.offsetHeight)
-      }
-
-      box.style.left = `${startX}px`
-      box.style.top = `${startY}px`
-      box.style.width = `${isDragHandle ? box.offsetWidth : minWidth}px`
-      box.style.height = `${isDragHandle ? box.offsetWidth : minWidth}px`
-
       host.addEventListener('mousemove', updateCropArea)
+
+      if (event.target.classList.contains('handle')) {
+        startX = box.offsetLeft + (event.target.className.match(/-right/) ? 0 : box.offsetWidth)
+        startY = box.offsetTop + (event.target.className.match(/bottom-/) ? 0 : box.offsetHeight)
+        updateCropArea(event)
+      } else {
+        const rect = host.getBoundingClientRect()
+        startX = event.pageX - rect.x - window.scrollX
+        startY = event.pageY - rect.y - window.scrollY
+        box.style.left = `${startX}px`
+        box.style.top = `${startY}px`
+        box.style.width = `${minWidth}px`
+        box.style.height = `${minWidth}px`
+      }
     }
   }
 
@@ -106,8 +105,8 @@ ImageCropPrototype.attachedCallback = function() {
     let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), minWidth)
     newSide = Math.min(newSide, deltaY > 0 ? image.height - startY : startY, deltaX > 0 ? image.width - startX : startX)
 
-    const x = Math.max(0, deltaX > 0 ? startX : startX - newSide)
-    const y = Math.max(0, deltaY > 0 ? startY : startY - newSide)
+    const x = Math.round(Math.max(0, deltaX > 0 ? startX : startX - newSide))
+    const y = Math.round(Math.max(0, deltaY > 0 ? startY : startY - newSide))
 
     box.style.left = `${x}px`
     box.style.top = `${y}px`
