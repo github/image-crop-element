@@ -1,5 +1,5 @@
 {
-  "name": "crop",
+  "name": "image-crop",
   "version": "1.0.0",
   "description": "Select area for cropping an image. This does not actually crop.",
   "main": "dist/index-umd.js",
@@ -11,7 +11,11 @@
     "build": "npm run build-umd",
     "build-umd": "BABEL_ENV=umd babel index.js -o dist/index-umd.js"
   },
-  "keywords": ["crop", "image"],
+  "keywords": [
+    "crop",
+    "image",
+    "custot element"
+  ],
   "author": "Mu-An Chiou",
   "license": "MIT",
   "devDependencies": {
