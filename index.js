@@ -8,7 +8,10 @@ ImageCropPrototype.attachedCallback = function() {
   shadowRoot.innerHTML = `
     <style>
       :host { display: block; }
-      .crop-wrapper { position: relative; }
+      .crop-wrapper {
+        position: relative;
+        font-size: 0;
+      }
       .crop-container {
         user-select: none;
         position: absolute;
@@ -17,19 +20,38 @@ ImageCropPrototype.attachedCallback = function() {
         top: 0;
         width: 100%;
         height: 100%;
-        font-size: 0;
       }
-
       .crop-box {
         position: absolute;
         border: 1px dashed #fff;
         box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);
         box-sizing: border-box;
       }
+      .handle { position: absolute; }
+      .handle:before {
+        position: absolute;
+        display: block;
+        padding: 4px;
+        transform: translate(-50%, -50%);
+        content: ' ';
+        background: #fff;
+        border: 1px solid #767676;
+      }
+      .top-right { top: 0; right: 0; }
+      .top-left { top: 0; left: 0; }
+      .bottom-right { bottom: 0; right: 0; }
+      .bottom-left { bottom: 0; left: 0; }
     </style>
     <div class="crop-wrapper">
       <img src="${host.getAttribute('src')}" width="100%">
-      <div class="crop-container"><div class="crop-box"></div></div>
+      <div class="crop-container">
+        <div class="crop-box">
+          <div class="handle top-left"></div>
+          <div class="handle top-right"></div>
+          <div class="handle bottom-left"></div>
+          <div class="handle bottom-right"></div>
+        </div>
+      </div>
     </div>
     <slot></slot>
   `
@@ -61,14 +83,22 @@ ImageCropPrototype.attachedCallback = function() {
       box.addEventListener('mousemove', moveCropArea)
     } else {
       // Change crop area
-      host.addEventListener('mousemove', updateCropArea)
       const rect = host.getBoundingClientRect()
+      const isDragHandle = event.target.classList.contains('handle')
       startX = event.pageX - rect.x - window.scrollX
       startY = event.pageY - rect.y - window.scrollY
+
+      if (isDragHandle) {
+        startX = startX + (event.target.className.match(/-right/) ? 0 - box.offsetWidth : box.offsetWidth)
+        startY = startY + (event.target.className.match(/bottom-/) ? 0 - box.offsetHeight : box.offsetHeight)
+      }
+
       box.style.left = `${startX}px`
       box.style.top = `${startY}px`
-      box.style.width = `${minWidth}px`
-      box.style.height = `${minWidth}px`
+      box.style.width = `${isDragHandle ? box.offsetWidth : minWidth}px`
+      box.style.height = `${isDragHandle ? box.offsetWidth : minWidth}px`
+
+      host.addEventListener('mousemove', updateCropArea)
     }
   }
 

@@ -21,7 +21,7 @@
     var minWidth = 10;
     var host = this;
     var shadowRoot = host.attachShadow({ mode: 'open' });
-    shadowRoot.innerHTML = '\n    <style>\n      :host { display: block; }\n      .crop-wrapper { position: relative; }\n      .crop-container {\n        user-select: none;\n        position: absolute;\n        overflow: hidden;\n        z-index: 1;\n        top: 0;\n        width: 100%;\n        height: 100%;\n        font-size: 0;\n      }\n\n      .crop-box {\n        position: absolute;\n        border: 1px dashed #fff;\n        box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n        box-sizing: border-box;\n      }\n    </style>\n    <div class="crop-wrapper">\n      <img src="' + host.getAttribute('src') + '" width="100%">\n      <div class="crop-container"><div class="crop-box"></div></div>\n    </div>\n    <slot></slot>\n  ';
+    shadowRoot.innerHTML = '\n    <style>\n      :host { display: block; }\n      .crop-wrapper {\n        position: relative;\n        font-size: 0;\n      }\n      .crop-container {\n        user-select: none;\n        position: absolute;\n        overflow: hidden;\n        z-index: 1;\n        top: 0;\n        width: 100%;\n        height: 100%;\n      }\n      .crop-box {\n        position: absolute;\n        border: 1px dashed #fff;\n        box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n        box-sizing: border-box;\n      }\n      .handle { position: absolute; }\n      .handle:before {\n        position: absolute;\n        display: block;\n        padding: 4px;\n        transform: translate(-50%, -50%);\n        content: \' \';\n        background: #fff;\n        border: 1px solid #767676;\n      }\n      .top-right { top: 0; right: 0; }\n      .top-left { top: 0; left: 0; }\n      .bottom-right { bottom: 0; right: 0; }\n      .bottom-left { bottom: 0; left: 0; }\n    </style>\n    <div class="crop-wrapper">\n      <img src="' + host.getAttribute('src') + '" width="100%">\n      <div class="crop-container">\n        <div class="crop-box">\n          <div class="handle top-left"></div>\n          <div class="handle top-right"></div>\n          <div class="handle bottom-left"></div>\n          <div class="handle bottom-right"></div>\n        </div>\n      </div>\n    </div>\n    <slot></slot>\n  ';
     var image = shadowRoot.querySelector('img');
     var box = shadowRoot.querySelector('.crop-box');
 
@@ -50,14 +50,22 @@
         box.addEventListener('mousemove', moveCropArea);
       } else {
         // Change crop area
-        host.addEventListener('mousemove', updateCropArea);
         var rect = host.getBoundingClientRect();
+        var isDragHandle = event.target.classList.contains('handle');
         startX = event.pageX - rect.x - window.scrollX;
         startY = event.pageY - rect.y - window.scrollY;
+
+        if (isDragHandle) {
+          startX = startX + (event.target.className.match(/-right/) ? 0 - box.offsetWidth : box.offsetWidth);
+          startY = startY + (event.target.className.match(/bottom-/) ? 0 - box.offsetHeight : box.offsetHeight);
+        }
+
         box.style.left = startX + 'px';
         box.style.top = startY + 'px';
-        box.style.width = minWidth + 'px';
-        box.style.height = minWidth + 'px';
+        box.style.width = (isDragHandle ? box.offsetWidth : minWidth) + 'px';
+        box.style.height = (isDragHandle ? box.offsetWidth : minWidth) + 'px';
+
+        host.addEventListener('mousemove', updateCropArea);
       }
     }
 
