@@ -100,10 +100,6 @@ ImageCropPrototype.attachedCallback = function() {
         const rect = host.getBoundingClientRect()
         startX = event.pageX - rect.x - window.scrollX
         startY = event.pageY - rect.y - window.scrollY
-        box.style.left = `${startX}px`
-        box.style.top = `${startY}px`
-        box.style.width = `${minWidth}px`
-        box.style.height = `${minWidth}px`
       }
     }
   }
