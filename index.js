@@ -10,6 +10,10 @@ ImageCropPrototype.attachedCallback = function() {
       :host { display: block; }
       :host(.nesw), .nesw { cursor: nesw-resize; }
       :host(.nwse), .nwse { cursor: nwse-resize; }
+      :host(.nesw) .crop-box,
+      :host(.nwse) .crop-box {
+        cursor: inherit;
+      }
       .crop-wrapper {
         position: relative;
         font-size: 0;
