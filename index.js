@@ -74,13 +74,13 @@ ImageCropPrototype.attachedCallback = function() {
 
   function stopUpdate() {
     host.removeEventListener('mousemove', updateCropArea)
-    box.removeEventListener('mousemove', moveCropArea)
+    host.removeEventListener('mousemove', moveCropArea)
   }
 
   function startUpdate(event) {
     if (event.target === box) {
       // Move crop area
-      box.addEventListener('mousemove', moveCropArea)
+      host.addEventListener('mousemove', moveCropArea)
     } else {
       // Change crop area
       host.addEventListener('mousemove', updateCropArea)
