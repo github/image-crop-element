@@ -62,7 +62,7 @@ ImageCropPrototype.attachedCallback = function() {
   const box = shadowRoot.querySelector('.crop-box')
 
   image.onload = function() {
-    const side = Math.round((image.width > image.height ? image.height : image.width) * 0.9)
+    const side = Math.round(image.width > image.height ? image.height : image.width)
     startX = (image.width - side) / 2
     startY = (image.height - side) / 2
     updateDimensions(side, side)
