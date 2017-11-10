@@ -1,153 +1,162 @@
-const ImageCropPrototype = Object.create(HTMLElement.prototype)
+class ImageCropElement extends HTMLElement {
+  constructor() {
+    super()
+    this.startX = null
+    this.startY = null
+    this.minWidth = 10
+    this.attachShadow({mode: 'open'})
+  }
 
-ImageCropPrototype.attachedCallback = function() {
-  let startX, startY
-  const minWidth = 10
-  const host = this
-  const shadowRoot = host.attachShadow({mode: 'open'})
-  shadowRoot.innerHTML = `
-    <style>
-      :host { display: block; }
-      :host(.nesw), .nesw { cursor: nesw-resize; }
-      :host(.nwse), .nwse { cursor: nwse-resize; }
-      :host(.nesw) .crop-box,
-      :host(.nwse) .crop-box {
-        cursor: inherit;
-      }
-      .crop-wrapper {
-        position: relative;
-        font-size: 0;
-      }
-      .crop-container {
-        user-select: none;
-        position: absolute;
-        overflow: hidden;
-        z-index: 1;
-        top: 0;
-        width: 100%;
-        height: 100%;
-      }
-      .crop-box {
-        position: absolute;
-        border: 1px dashed #fff;
-        box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);
-        box-sizing: border-box;
-        cursor: move;
-      }
-      .handle { position: absolute; }
-      .handle:before {
-        position: absolute;
-        display: block;
-        padding: 4px;
-        transform: translate(-50%, -50%);
-        content: ' ';
-        background: #fff;
-        border: 1px solid #767676;
-      }
-      .ne { top: 0; right: 0; }
-      .nw { top: 0; left: 0; }
-      .se { bottom: 0; right: 0; }
-      .sw { bottom: 0; left: 0; }
-    </style>
-    <div class="crop-wrapper">
-      <img src="${host.getAttribute('src')}" width="100%">
-      <div class="crop-container">
-        <div class="crop-box">
-          <div class="handle nw nwse"></div>
-          <div class="handle ne nesw"></div>
-          <div class="handle sw nesw"></div>
-          <div class="handle se nwse"></div>
+  connectedCallback() {
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host { display: block; }
+        :host(.nesw), .nesw { cursor: nesw-resize; }
+        :host(.nwse), .nwse { cursor: nwse-resize; }
+        :host(.nesw) .crop-box,
+        :host(.nwse) .crop-box {
+          cursor: inherit;
+        }
+        .crop-wrapper {
+          position: relative;
+          font-size: 0;
+        }
+        .crop-container {
+          user-select: none;
+          position: absolute;
+          overflow: hidden;
+          z-index: 1;
+          top: 0;
+          width: 100%;
+          height: 100%;
+        }
+        .crop-box {
+          position: absolute;
+          border: 1px dashed #fff;
+          box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);
+          box-sizing: border-box;
+          cursor: move;
+        }
+        .handle { position: absolute; }
+        .handle:before {
+          position: absolute;
+          display: block;
+          padding: 4px;
+          transform: translate(-50%, -50%);
+          content: ' ';
+          background: #fff;
+          border: 1px solid #767676;
+        }
+        .ne { top: 0; right: 0; }
+        .nw { top: 0; left: 0; }
+        .se { bottom: 0; right: 0; }
+        .sw { bottom: 0; left: 0; }
+      </style>
+      <div class="crop-wrapper">
+        <img src="${this.getAttribute('src')}" width="100%">
+        <div class="crop-container">
+          <div class="crop-box">
+            <div class="handle nw nwse"></div>
+            <div class="handle ne nesw"></div>
+            <div class="handle sw nesw"></div>
+            <div class="handle se nwse"></div>
+          </div>
         </div>
       </div>
-    </div>
-    <slot></slot>
-  `
-  const image = shadowRoot.querySelector('img')
-  const box = shadowRoot.querySelector('.crop-box')
+      <slot></slot>
+    `
+    this.image = this.shadowRoot.querySelector('img')
+    this.box = this.shadowRoot.querySelector('.crop-box')
 
-  image.onload = function() {
+    this.image.addEventListener('load', this.imageReady.bind(this))
+    this.addEventListener('mouseleave', this.stopUpdate)
+    this.addEventListener('mouseup', this.stopUpdate)
+    // This is on shadow root so we can tell apart the event target
+    this.shadowRoot.addEventListener('mousedown', this.startUpdate.bind(this))
+  }
+
+  imageReady(event) {
+    const image = event.target
     const side = Math.round(image.width > image.height ? image.height : image.width)
-    startX = (image.width - side) / 2
-    startY = (image.height - side) / 2
-    updateDimensions(side, side)
-
-    host.dispatchEvent(new CustomEvent('crop:init', {bubbles: true}))
+    this.startX = (image.width - side) / 2
+    this.startY = (image.height - side) / 2
+    this.updateDimensions(side, side)
+    this.dispatchEvent(new CustomEvent('crop:init', {bubbles: true}))
   }
 
-  host.addEventListener('mouseleave', stopUpdate)
-  host.addEventListener('mouseup', stopUpdate)
-  // This is on shadow root so we can tell apart the event target
-  shadowRoot.addEventListener('mousedown', startUpdate)
-
-  function stopUpdate() {
-    host.classList.remove('nwse', 'nesw')
-    host.removeEventListener('mousemove', updateCropArea)
-    host.removeEventListener('mousemove', moveCropArea)
+  stopUpdate() {
+    this.classList.remove('nwse', 'nesw')
+    this.removeEventListener('mousemove', this.updateCropArea)
+    this.removeEventListener('mousemove', this.moveCropArea)
   }
 
-  function startUpdate(event) {
-    if (event.target === box) {
+  startUpdate(event) {
+    if (event.target === this.box) {
       // Move crop area
-      host.addEventListener('mousemove', moveCropArea)
+      this.addEventListener('mousemove', this.moveCropArea)
     } else {
       // Change crop area
       const classList = event.target.classList
-      host.addEventListener('mousemove', updateCropArea)
+      this.addEventListener('mousemove', this.updateCropArea)
 
       if (classList.contains('handle')) {
-        if (classList.contains('nwse')) host.classList.add('nwse')
-        if (classList.contains('nesw')) host.classList.add('nesw')
-        startX = box.offsetLeft + (classList.contains('se') || classList.contains('ne') ? 0 : box.offsetWidth)
-        startY = box.offsetTop + (classList.contains('se') || classList.contains('sw') ? 0 : box.offsetHeight)
-        updateCropArea(event)
+        if (classList.contains('nwse')) this.classList.add('nwse')
+        if (classList.contains('nesw')) this.classList.add('nesw')
+        this.startX =
+          this.box.offsetLeft + (classList.contains('se') || classList.contains('ne') ? 0 : this.box.offsetWidth)
+        this.startY =
+          this.box.offsetTop + (classList.contains('se') || classList.contains('sw') ? 0 : this.box.offsetHeight)
+        this.updateCropArea(event)
       } else {
-        const rect = host.getBoundingClientRect()
-        startX = event.pageX - rect.x - window.scrollX
-        startY = event.pageY - rect.y - window.scrollY
+        const rect = this.getBoundingClientRect()
+        this.startX = event.pageX - rect.x - window.scrollX
+        this.startY = event.pageY - rect.y - window.scrollY
       }
     }
   }
 
-  function updateDimensions(deltaX, deltaY) {
-    let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), minWidth)
-    newSide = Math.min(newSide, deltaY > 0 ? image.height - startY : startY, deltaX > 0 ? image.width - startX : startX)
+  updateDimensions(deltaX, deltaY) {
+    let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), this.minWidth)
+    newSide = Math.min(
+      newSide,
+      deltaY > 0 ? this.image.height - this.startY : this.startY,
+      deltaX > 0 ? this.image.width - this.startX : this.startX
+    )
 
-    const x = Math.round(Math.max(0, deltaX > 0 ? startX : startX - newSide))
-    const y = Math.round(Math.max(0, deltaY > 0 ? startY : startY - newSide))
+    const x = Math.round(Math.max(0, deltaX > 0 ? this.startX : this.startX - newSide))
+    const y = Math.round(Math.max(0, deltaY > 0 ? this.startY : this.startY - newSide))
 
-    box.style.left = `${x}px`
-    box.style.top = `${y}px`
-    box.style.width = `${newSide}px`
-    box.style.height = `${newSide}px`
-    fireChangeEvent({x, y, width: newSide, height: newSide})
+    this.box.style.left = `${x}px`
+    this.box.style.top = `${y}px`
+    this.box.style.width = `${newSide}px`
+    this.box.style.height = `${newSide}px`
+    this.fireChangeEvent({x, y, width: newSide, height: newSide})
   }
 
-  function moveCropArea(event) {
-    const x = Math.min(Math.max(0, box.offsetLeft + event.movementX), image.width - box.offsetWidth)
-    const y = Math.min(Math.max(0, box.offsetTop + event.movementY), image.height - box.offsetHeight)
-    box.style.left = `${x}px`
-    box.style.top = `${y}px`
+  moveCropArea(event) {
+    const x = Math.min(Math.max(0, this.box.offsetLeft + event.movementX), this.image.width - this.box.offsetWidth)
+    const y = Math.min(Math.max(0, this.box.offsetTop + event.movementY), this.image.height - this.box.offsetHeight)
+    this.box.style.left = `${x}px`
+    this.box.style.top = `${y}px`
 
-    fireChangeEvent({x, y, width: box.offsetWidth, height: box.offsetHeight})
+    this.fireChangeEvent({x, y, width: this.box.offsetWidth, height: this.box.offsetHeight})
   }
 
-  function updateCropArea(event) {
-    const rect = host.getBoundingClientRect()
-    const deltaX = event.pageX - startX - rect.x - window.scrollX
-    const deltaY = event.pageY - startY - rect.y - window.scrollY
-    updateDimensions(deltaX, deltaY)
+  updateCropArea(event) {
+    const rect = this.getBoundingClientRect()
+    const deltaX = event.pageX - this.startX - rect.x - window.scrollX
+    const deltaY = event.pageY - this.startY - rect.y - window.scrollY
+    this.updateDimensions(deltaX, deltaY)
   }
 
-  function fireChangeEvent(result) {
-    const ratio = image.naturalWidth / image.width
+  fireChangeEvent(result) {
+    const ratio = this.image.naturalWidth / this.image.width
     for (const key in result) {
       result[key] = Math.round(result[key] * ratio)
     }
 
-    host.dispatchEvent(new CustomEvent('crop:change', {bubbles: true, detail: result}))
+    this.dispatchEvent(new CustomEvent('crop:change', {bubbles: true, detail: result}))
   }
 }
 
-window.ImageCropElement = document.registerElement('image-crop', {
-  prototype: ImageCropPrototype
-})
+window.customElements.define('image-crop', ImageCropElement)
