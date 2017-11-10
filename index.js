@@ -8,6 +8,8 @@ ImageCropPrototype.attachedCallback = function() {
   shadowRoot.innerHTML = `
     <style>
       :host { display: block; }
+      :host(.nesw), .nesw { cursor: nesw-resize; }
+      :host(.nwse), .nwse { cursor: nwse-resize; }
       .crop-wrapper {
         position: relative;
         font-size: 0;
@@ -26,6 +28,7 @@ ImageCropPrototype.attachedCallback = function() {
         border: 1px dashed #fff;
         box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);
         box-sizing: border-box;
+        cursor: move;
       }
       .handle { position: absolute; }
       .handle:before {
@@ -37,19 +40,19 @@ ImageCropPrototype.attachedCallback = function() {
         background: #fff;
         border: 1px solid #767676;
       }
-      .top-right { top: 0; right: 0; }
-      .top-left { top: 0; left: 0; }
-      .bottom-right { bottom: 0; right: 0; }
-      .bottom-left { bottom: 0; left: 0; }
+      .ne { top: 0; right: 0; }
+      .nw { top: 0; left: 0; }
+      .se { bottom: 0; right: 0; }
+      .sw { bottom: 0; left: 0; }
     </style>
     <div class="crop-wrapper">
       <img src="${host.getAttribute('src')}" width="100%">
       <div class="crop-container">
         <div class="crop-box">
-          <div class="handle top-left"></div>
-          <div class="handle top-right"></div>
-          <div class="handle bottom-left"></div>
-          <div class="handle bottom-right"></div>
+          <div class="handle nw nwse"></div>
+          <div class="handle ne nesw"></div>
+          <div class="handle sw nesw"></div>
+          <div class="handle se nwse"></div>
         </div>
       </div>
     </div>
@@ -73,6 +76,7 @@ ImageCropPrototype.attachedCallback = function() {
   shadowRoot.addEventListener('mousedown', startUpdate)
 
   function stopUpdate() {
+    host.classList.remove('nwse', 'nesw')
     host.removeEventListener('mousemove', updateCropArea)
     host.removeEventListener('mousemove', moveCropArea)
   }
@@ -83,11 +87,14 @@ ImageCropPrototype.attachedCallback = function() {
       host.addEventListener('mousemove', moveCropArea)
     } else {
       // Change crop area
+      const classList = event.target.classList
       host.addEventListener('mousemove', updateCropArea)
 
-      if (event.target.classList.contains('handle')) {
-        startX = box.offsetLeft + (event.target.className.match(/-right/) ? 0 : box.offsetWidth)
-        startY = box.offsetTop + (event.target.className.match(/bottom-/) ? 0 : box.offsetHeight)
+      if (classList.contains('handle')) {
+        if (classList.contains('nwse')) host.classList.add('nwse')
+        if (classList.contains('nesw')) host.classList.add('nesw')
+        startX = box.offsetLeft + (classList.contains('se') || classList.contains('ne') ? 0 : box.offsetWidth)
+        startY = box.offsetTop + (classList.contains('se') || classList.contains('sw') ? 0 : box.offsetHeight)
         updateCropArea(event)
       } else {
         const rect = host.getBoundingClientRect()
