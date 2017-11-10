@@ -1,7 +1,7 @@
 # &lt;image-crop&gt;
 
 ```html
-  <image-crop src="image url"></image-crop>
+<image-crop src="/avatar.jpg"></image-crop>
 ```
 
 ```javascript
