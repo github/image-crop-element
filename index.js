@@ -71,8 +71,7 @@ class ImageCropElement extends HTMLElement {
     this.image.addEventListener('load', this.imageReady.bind(this))
     this.addEventListener('mouseleave', this.stopUpdate)
     this.addEventListener('mouseup', this.stopUpdate)
-    // This is on shadow root so we can tell apart the event target
-    this.shadowRoot.addEventListener('mousedown', this.startUpdate.bind(this))
+    this.box.addEventListener('mousedown', this.startUpdate.bind(this))
   }
 
   imageReady(event) {
@@ -91,27 +90,20 @@ class ImageCropElement extends HTMLElement {
   }
 
   startUpdate(event) {
-    if (event.target === this.box) {
+    const classList = event.target.classList
+    if (classList.contains('handle')) {
+      // Change crop area
+      this.addEventListener('mousemove', this.updateCropArea)
+      if (classList.contains('nwse')) this.classList.add('nwse')
+      if (classList.contains('nesw')) this.classList.add('nesw')
+      this.startX =
+        this.box.offsetLeft + (classList.contains('se') || classList.contains('ne') ? 0 : this.box.offsetWidth)
+      this.startY =
+        this.box.offsetTop + (classList.contains('se') || classList.contains('sw') ? 0 : this.box.offsetHeight)
+      this.updateCropArea(event)
+    } else {
       // Move crop area
       this.addEventListener('mousemove', this.moveCropArea)
-    } else {
-      // Change crop area
-      const classList = event.target.classList
-      this.addEventListener('mousemove', this.updateCropArea)
-
-      if (classList.contains('handle')) {
-        if (classList.contains('nwse')) this.classList.add('nwse')
-        if (classList.contains('nesw')) this.classList.add('nesw')
-        this.startX =
-          this.box.offsetLeft + (classList.contains('se') || classList.contains('ne') ? 0 : this.box.offsetWidth)
-        this.startY =
-          this.box.offsetTop + (classList.contains('se') || classList.contains('sw') ? 0 : this.box.offsetHeight)
-        this.updateCropArea(event)
-      } else {
-        const rect = this.getBoundingClientRect()
-        this.startX = event.pageX - rect.x - window.scrollX
-        this.startY = event.pageY - rect.y - window.scrollY
-      }
     }
   }
 
