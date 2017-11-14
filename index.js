@@ -174,4 +174,6 @@ class ImageCropElement extends HTMLElement {
   }
 }
 
-window.customElements.define('image-crop', ImageCropElement)
+if (!window.customElements.get('image-crop')) {
+  window.customElements.define('image-crop', ImageCropElement)
+}
