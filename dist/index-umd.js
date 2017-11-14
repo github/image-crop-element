@@ -116,7 +116,7 @@
         this.startX = (image.width - side) / 2;
         this.startY = (image.height - side) / 2;
         this.updateDimensions(side, side);
-        this.dispatchEvent(new CustomEvent('crop:init', { bubbles: true }));
+        this.dispatchEvent(new CustomEvent('image-crop-init', { bubbles: true }));
       }
     }, {
       key: 'stopUpdate',
@@ -183,7 +183,7 @@
           result[key] = Math.round(result[key] * ratio);
         }
 
-        this.dispatchEvent(new CustomEvent('crop:change', { bubbles: true, detail: result }));
+        this.dispatchEvent(new CustomEvent('image-crop-change', { bubbles: true, detail: result }));
       }
     }, {
       key: 'src',
