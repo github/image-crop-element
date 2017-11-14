@@ -1,4 +1,4 @@
-class ImageCropElement extends HTMLElement {
+export class ImageCropElement extends HTMLElement {
   constructor() {
     super()
     this.startX = null
