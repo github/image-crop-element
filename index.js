@@ -5,9 +5,6 @@ class ImageCropElement extends HTMLElement {
     this.startY = null
     this.minWidth = 10
     this.attachShadow({mode: 'open'})
-  }
-
-  connectedCallback() {
     this.shadowRoot.innerHTML = `
       <style>
         :host { display: block; }
@@ -53,7 +50,7 @@ class ImageCropElement extends HTMLElement {
         .sw { bottom: 0; left: 0; }
       </style>
       <div class="crop-wrapper">
-        <img src="${this.getAttribute('src')}" width="100%">
+        <img width="100%">
         <div class="crop-container">
           <div class="crop-box">
             <div class="handle nw nwse"></div>
@@ -67,11 +64,37 @@ class ImageCropElement extends HTMLElement {
     `
     this.image = this.shadowRoot.querySelector('img')
     this.box = this.shadowRoot.querySelector('.crop-box')
+  }
 
+  connectedCallback() {
     this.image.addEventListener('load', this.imageReady.bind(this))
     this.addEventListener('mouseleave', this.stopUpdate)
     this.addEventListener('mouseup', this.stopUpdate)
     this.box.addEventListener('mousedown', this.startUpdate.bind(this))
+
+    if (this.src) this.image.src = this.src
+  }
+
+  static get observedAttributes() {
+    return ['src']
+  }
+
+  get src() {
+    return this.getAttribute('src')
+  }
+
+  set src(val) {
+    if (val) {
+      this.setAttribute('src', val)
+    } else {
+      this.removeAttribute('src')
+    }
+  }
+
+  attributeChangedCallback(attribute, oldValue, newValue) {
+    if (attribute === 'src') {
+      this.image.src = newValue
+    }
   }
 
   imageReady(event) {
