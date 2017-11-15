@@ -85,7 +85,7 @@
       _this.startY = null;
       _this.minWidth = 10;
       _this.attachShadow({ mode: 'open' });
-      _this.shadowRoot.innerHTML = '\n      <style>\n        :host { display: block; }\n        :host(.nesw), .nesw { cursor: nesw-resize; }\n        :host(.nwse), .nwse { cursor: nwse-resize; }\n        :host(.nesw) .crop-box,\n        :host(.nwse) .crop-box {\n          cursor: inherit;\n        }\n        .crop-wrapper {\n          position: relative;\n          font-size: 0;\n        }\n        .crop-container {\n          user-select: none;\n          position: absolute;\n          overflow: hidden;\n          z-index: 1;\n          top: 0;\n          width: 100%;\n          height: 100%;\n        }\n        .crop-box {\n          position: absolute;\n          border: 1px dashed #fff;\n          box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n          box-sizing: border-box;\n          cursor: move;\n        }\n        .handle { position: absolute; }\n        .handle:before {\n          position: absolute;\n          display: block;\n          padding: 4px;\n          transform: translate(-50%, -50%);\n          content: \' \';\n          background: #fff;\n          border: 1px solid #767676;\n        }\n        .ne { top: 0; right: 0; }\n        .nw { top: 0; left: 0; }\n        .se { bottom: 0; right: 0; }\n        .sw { bottom: 0; left: 0; }\n      </style>\n      <div class="crop-wrapper">\n        <img width="100%">\n        <div class="crop-container">\n          <div class="crop-box">\n            <div class="handle nw nwse"></div>\n            <div class="handle ne nesw"></div>\n            <div class="handle sw nesw"></div>\n            <div class="handle se nwse"></div>\n          </div>\n        </div>\n      </div>\n      <slot></slot>\n    ';
+      _this.shadowRoot.innerHTML = '\n      <style>\n        :host { display: block; }\n        :host(.nesw), .nesw { cursor: nesw-resize; }\n        :host(.nwse), .nwse { cursor: nwse-resize; }\n        :host(.nesw) .crop-box,\n        :host(.nwse) .crop-box {\n          cursor: inherit;\n        }\n        :host([loaded]) .crop-image { display: block; }\n        :host([loaded]) [name="loading"]::slotted(*),\n        .crop-image {\n          display: none;\n        }\n        .crop-wrapper {\n          position: relative;\n          font-size: 0;\n        }\n        .crop-container {\n          user-select: none;\n          position: absolute;\n          overflow: hidden;\n          z-index: 1;\n          top: 0;\n          width: 100%;\n          height: 100%;\n        }\n        .crop-box {\n          position: absolute;\n          border: 1px dashed #fff;\n          box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n          box-sizing: border-box;\n          cursor: move;\n        }\n        .handle { position: absolute; }\n        .handle:before {\n          position: absolute;\n          display: block;\n          padding: 4px;\n          transform: translate(-50%, -50%);\n          content: \' \';\n          background: #fff;\n          border: 1px solid #767676;\n        }\n        .ne { top: 0; right: 0; }\n        .nw { top: 0; left: 0; }\n        .se { bottom: 0; right: 0; }\n        .sw { bottom: 0; left: 0; }\n      </style>\n      <slot name="loading"></slot>\n      <div class="crop-wrapper">\n        <img width="100%" class="crop-image">\n        <div class="crop-container">\n          <div class="crop-box">\n            <div class="handle nw nwse"></div>\n            <div class="handle ne nesw"></div>\n            <div class="handle sw nesw"></div>\n            <div class="handle se nwse"></div>\n          </div>\n        </div>\n      </div>\n      <slot></slot>\n    ';
       _this.image = _this.shadowRoot.querySelector('img');
       _this.box = _this.shadowRoot.querySelector('.crop-box');
       return _this;
@@ -105,18 +105,19 @@
       key: 'attributeChangedCallback',
       value: function attributeChangedCallback(attribute, oldValue, newValue) {
         if (attribute === 'src') {
+          this.loaded = false;
           this.image.src = newValue;
         }
       }
     }, {
       key: 'imageReady',
       value: function imageReady(event) {
+        this.loaded = true;
         var image = event.target;
         var side = Math.round(image.width > image.height ? image.height : image.width);
         this.startX = (image.width - side) / 2;
         this.startY = (image.height - side) / 2;
         this.updateDimensions(side, side);
-        this.dispatchEvent(new CustomEvent('image-crop-init', { bubbles: true }));
       }
     }, {
       key: 'stopUpdate',
@@ -195,6 +196,18 @@
           this.setAttribute('src', val);
         } else {
           this.removeAttribute('src');
+        }
+      }
+    }, {
+      key: 'loaded',
+      get: function get() {
+        return this.hasAttribute('loaded');
+      },
+      set: function set(val) {
+        if (val) {
+          this.setAttribute('loaded', '');
+        } else {
+          this.removeAttribute('loaded');
         }
       }
     }], [{
