@@ -1,4 +1,4 @@
-# &lt;image-crop&gt;
+# &lt;image-crop-element&gt;
 
 ```html
 <image-crop src="/avatar.jpg"></image-crop>
