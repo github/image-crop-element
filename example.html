@@ -7,7 +7,7 @@
       margin: 30px auto;
     }
   </style>
-  <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="dist/index-umd.js"></script>
   <title>crop</title>
 </head>
 <body>
@@ -15,7 +15,7 @@
   <image-crop src="floyen.jpg" class="wrapper"><code></code></image-crop>
 
   <script type="text/javascript">
-    document.addEventListener('crop:change', function(event) {
+    document.addEventListener('image-crop-change', function(event) {
       const textContainer = event.target.querySelector('code')
       textContainer.textContent = ''
       for(const key in event.detail) {

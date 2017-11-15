@@ -5,11 +5,11 @@
 ```
 
 ```javascript
-document.addEventListener('crop:init', function (event){
+document.addEventListener('image-crop-init', function (event){
   console.log('Initialized.')
 })
 
-document.addEventListener('crop:change', function (event){
+document.addEventListener('image-crop-change', function (event){
   console.log(
     'Crop area changed.',
     event.detail.x,
