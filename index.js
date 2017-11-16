@@ -35,7 +35,7 @@ export class ImageCropElement extends HTMLElement {
         .crop-box {
           position: absolute;
           border: 1px dashed #fff;
-          box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);
+          box-shadow: 0 0 5000px 5000px rgba(0, 0, 0, .3);
           box-sizing: border-box;
           cursor: move;
         }
