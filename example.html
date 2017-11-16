@@ -6,12 +6,20 @@
       width: 500px;
       margin: 30px auto;
     }
+    .loading {
+      background: #f0f0f0;
+      text-align: center;
+      padding: 100px 30px;
+    }
   </style>
   <script type="text/javascript" src="dist/index-umd.js"></script>
   <title>crop</title>
 </head>
 <body>
-  <image-crop src="ams.jpg" class="wrapper"><code></code></image-crop>
+  <image-crop src="ams.jpg" class="wrapper">
+    <div slot="loading" class="loading">loading</div>
+    <code></code>
+  </image-crop>
   <image-crop src="floyen.jpg" class="wrapper"><code></code></image-crop>
 
   <script type="text/javascript">

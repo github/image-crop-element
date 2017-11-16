@@ -1,14 +1,22 @@
 # &lt;image-crop-element&gt;
 
+## Plain
+
 ```html
 <image-crop src="/avatar.jpg"></image-crop>
 ```
 
-```javascript
-document.addEventListener('image-crop-init', function (event){
-  console.log('Initialized.')
-})
+## With loading state
 
+```html
+<image-crop src="/avatar.jpg">
+  <img slot="loading" src="spinner.gif" alt="" />
+</image-crop>
+```
+
+## Change event
+
+```javascript
 document.addEventListener('image-crop-change', function (event){
   console.log(
     'Crop area changed.',

@@ -14,6 +14,11 @@ export class ImageCropElement extends HTMLElement {
         :host(.nwse) .crop-box {
           cursor: inherit;
         }
+        :host([loaded]) .crop-image { display: block; }
+        :host([loaded]) [name="loading"]::slotted(*),
+        .crop-image {
+          display: none;
+        }
         .crop-wrapper {
           position: relative;
           font-size: 0;
@@ -49,8 +54,9 @@ export class ImageCropElement extends HTMLElement {
         .se { bottom: 0; right: 0; }
         .sw { bottom: 0; left: 0; }
       </style>
+      <slot name="loading"></slot>
       <div class="crop-wrapper">
-        <img width="100%">
+        <img width="100%" class="crop-image">
         <div class="crop-container">
           <div class="crop-box">
             <div class="handle nw nwse"></div>
@@ -91,19 +97,32 @@ export class ImageCropElement extends HTMLElement {
     }
   }
 
+  get loaded() {
+    return this.hasAttribute('loaded')
+  }
+
+  set loaded(val) {
+    if (val) {
+      this.setAttribute('loaded', '')
+    } else {
+      this.removeAttribute('loaded')
+    }
+  }
+
   attributeChangedCallback(attribute, oldValue, newValue) {
     if (attribute === 'src') {
+      this.loaded = false
       this.image.src = newValue
     }
   }
 
   imageReady(event) {
+    this.loaded = true
     const image = event.target
     const side = Math.round(image.width > image.height ? image.height : image.width)
     this.startX = (image.width - side) / 2
     this.startY = (image.height - side) / 2
     this.updateDimensions(side, side)
-    this.dispatchEvent(new CustomEvent('image-crop-init', {bubbles: true}))
   }
 
   stopUpdate() {
