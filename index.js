@@ -63,19 +63,24 @@ tmpl.innerHTML = `
   <slot></slot>
 `
 
+ShadyCSS.prepareTemplate(tmpl, 'image-crop')
+
 export class ImageCropElement extends HTMLElement {
   constructor() {
     super()
     this.startX = null
     this.startY = null
     this.minWidth = 10
-    this.attachShadow({mode: 'open'})
-    this.shadowRoot.appendChild(tmpl.content.cloneNode(true))
-    this.image = this.shadowRoot.querySelector('img')
-    this.box = this.shadowRoot.querySelector('.crop-box')
   }
 
   connectedCallback() {
+    ShadyCSS.styleElement(this)
+
+    this.attachShadow({mode: 'open'})
+    this.shadowRoot.appendChild(document.importNode(tmpl.content, true))
+    this.image = this.shadowRoot.querySelector('img')
+    this.box = this.shadowRoot.querySelector('.crop-box')
+
     this.image.addEventListener('load', this.imageReady.bind(this))
     this.addEventListener('mouseleave', this.stopUpdate)
     this.addEventListener('mouseup', this.stopUpdate)
@@ -115,7 +120,7 @@ export class ImageCropElement extends HTMLElement {
   attributeChangedCallback(attribute, oldValue, newValue) {
     if (attribute === 'src') {
       this.loaded = false
-      this.image.src = newValue
+      if (this.image) this.image.src = newValue
     }
   }
 
