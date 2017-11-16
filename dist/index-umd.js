@@ -73,7 +73,9 @@
   Object.setPrototypeOf(_CustomElement.prototype, HTMLElement.prototype);
   Object.setPrototypeOf(_CustomElement, HTMLElement);
   var tmpl = document.createElement('template');
-  tmpl.innerHTML = '\n  <style>\n    :host { display: block; }\n    :host(.nesw), .nesw { cursor: nesw-resize; }\n    :host(.nwse), .nwse { cursor: nwse-resize; }\n    :host(.nesw) .crop-box,\n    :host(.nwse) .crop-box {\n      cursor: inherit;\n    }\n    :host([loaded]) .crop-image { display: block; }\n    :host([loaded]) [name="loading"]::slotted(*),\n    .crop-image {\n      display: none;\n    }\n    .crop-wrapper {\n      position: relative;\n      font-size: 0;\n    }\n    .crop-container {\n      user-select: none;\n      position: absolute;\n      overflow: hidden;\n      z-index: 1;\n      top: 0;\n      width: 100%;\n      height: 100%;\n    }\n    .crop-box {\n      position: absolute;\n      border: 1px dashed #fff;\n      box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n      box-sizing: border-box;\n      cursor: move;\n    }\n    .handle { position: absolute; }\n    .handle:before {\n      position: absolute;\n      display: block;\n      padding: 4px;\n      transform: translate(-50%, -50%);\n      content: \' \';\n      background: #fff;\n      border: 1px solid #767676;\n    }\n    .ne { top: 0; right: 0; }\n    .nw { top: 0; left: 0; }\n    .se { bottom: 0; right: 0; }\n    .sw { bottom: 0; left: 0; }\n  </style>\n  <slot name="loading"></slot>\n  <div class="crop-wrapper">\n    <img width="100%" class="crop-image">\n    <div class="crop-container">\n      <div class="crop-box">\n        <div class="handle nw nwse"></div>\n        <div class="handle ne nesw"></div>\n        <div class="handle sw nesw"></div>\n        <div class="handle se nwse"></div>\n      </div>\n    </div>\n  </div>\n  <slot></slot>\n';
+  tmpl.innerHTML = '\n  <style>\n    :host { display: block; }\n    :host(.nesw), .nesw { cursor: nesw-resize; }\n    :host(.nwse), .nwse { cursor: nwse-resize; }\n    :host(.nesw) .crop-box,\n    :host(.nwse) .crop-box {\n      cursor: inherit;\n    }\n    :host([loaded]) .crop-image { display: block; }\n    :host([loaded]) .crop-loading ::slotted(*),\n    .crop-image {\n      display: none;\n    }\n    .crop-wrapper {\n      position: relative;\n      font-size: 0;\n    }\n    .crop-container {\n      user-select: none;\n      position: absolute;\n      overflow: hidden;\n      z-index: 1;\n      top: 0;\n      width: 100%;\n      height: 100%;\n    }\n    .crop-box {\n      position: absolute;\n      border: 1px dashed #fff;\n      box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n      box-sizing: border-box;\n      cursor: move;\n    }\n    .handle { position: absolute; }\n    .handle:before {\n      position: absolute;\n      display: block;\n      padding: 4px;\n      transform: translate(-50%, -50%);\n      content: \' \';\n      background: #fff;\n      border: 1px solid #767676;\n    }\n    .ne { top: 0; right: 0; }\n    .nw { top: 0; left: 0; }\n    .se { bottom: 0; right: 0; }\n    .sw { bottom: 0; left: 0; }\n  </style>\n  <div class="crop-loading"><slot name="loading"></slot></div>\n  <div class="crop-wrapper">\n    <img width="100%" class="crop-image">\n    <div class="crop-container">\n      <div class="crop-box">\n        <div class="handle nw nwse"></div>\n        <div class="handle ne nesw"></div>\n        <div class="handle sw nesw"></div>\n        <div class="handle se nwse"></div>\n      </div>\n    </div>\n  </div>\n  <slot></slot>\n';
+
+  ShadyCSS.prepareTemplate(tmpl, 'image-crop');
 
   var ImageCropElement = exports.ImageCropElement = function (_CustomElement2) {
     _inherits(ImageCropElement, _CustomElement2);
@@ -86,16 +88,19 @@
       _this.startX = null;
       _this.startY = null;
       _this.minWidth = 10;
-      _this.attachShadow({ mode: 'open' });
-      _this.shadowRoot.appendChild(tmpl.content.cloneNode(true));
-      _this.image = _this.shadowRoot.querySelector('img');
-      _this.box = _this.shadowRoot.querySelector('.crop-box');
       return _this;
     }
 
     _createClass(ImageCropElement, [{
       key: 'connectedCallback',
       value: function connectedCallback() {
+        ShadyCSS.styleElement(this);
+
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.appendChild(document.importNode(tmpl.content, true));
+        this.image = this.shadowRoot.querySelector('img');
+        this.box = this.shadowRoot.querySelector('.crop-box');
+
         this.image.addEventListener('load', this.imageReady.bind(this));
         this.addEventListener('mouseleave', this.stopUpdate);
         this.addEventListener('mouseup', this.stopUpdate);
@@ -108,7 +113,7 @@
       value: function attributeChangedCallback(attribute, oldValue, newValue) {
         if (attribute === 'src') {
           this.loaded = false;
-          this.image.src = newValue;
+          if (this.image) this.image.src = newValue;
         }
       }
     }, {
@@ -116,9 +121,9 @@
       value: function imageReady(event) {
         this.loaded = true;
         var image = event.target;
-        var side = Math.round(image.width > image.height ? image.height : image.width);
-        this.startX = (image.width - side) / 2;
-        this.startY = (image.height - side) / 2;
+        var side = Math.round(image.clientWidth > image.clientHeight ? image.clientHeight : image.clientWidth);
+        this.startX = (image.clientWidth - side) / 2;
+        this.startY = (image.clientHeight - side) / 2;
         this.updateDimensions(side, side);
       }
     }, {
