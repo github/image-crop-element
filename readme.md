@@ -1,12 +1,18 @@
 # &lt;image-crop-element&gt;
 
-## Plain
+This loads an image and creates a crop area user can change. Upon changing, an event is fired with x, y, width, and height.
+
+This is a [Custom Element](https://developers.google.com/web/fundamentals/web-components/customelements) with [Shadow DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom). You'll need to use [a polyfill](https://www.webcomponents.org/polyfills) to use this today.
+
+## Usage
+
+### Plain
 
 ```html
 <image-crop src="/avatar.jpg"></image-crop>
 ```
 
-## With loading state
+### With loading state
 
 ```html
 <image-crop src="/avatar.jpg">
@@ -14,7 +20,7 @@
 </image-crop>
 ```
 
-## Change event
+### Listen to the change event
 
 ```javascript
 document.addEventListener('image-crop-change', function (event){
