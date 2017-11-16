@@ -119,9 +119,9 @@ export class ImageCropElement extends HTMLElement {
   imageReady(event) {
     this.loaded = true
     const image = event.target
-    const side = Math.round(image.width > image.height ? image.height : image.width)
-    this.startX = (image.width - side) / 2
-    this.startY = (image.height - side) / 2
+    const side = Math.round(image.clientWidth > image.clientHeight ? image.clientHeight : image.clientWidth)
+    this.startX = (image.clientWidth - side) / 2
+    this.startY = (image.clientHeight - side) / 2
     this.updateDimensions(side, side)
   }
 
