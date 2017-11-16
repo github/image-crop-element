@@ -72,51 +72,28 @@
   ;
   Object.setPrototypeOf(_CustomElement.prototype, HTMLElement.prototype);
   Object.setPrototypeOf(_CustomElement, HTMLElement);
+  var tmpl = document.createElement('template');
+  tmpl.innerHTML = '\n  <style>\n    :host { display: block; }\n    :host(.nesw), .nesw { cursor: nesw-resize; }\n    :host(.nwse), .nwse { cursor: nwse-resize; }\n    :host(.nesw) .crop-box,\n    :host(.nwse) .crop-box {\n      cursor: inherit;\n    }\n    :host([loaded]) .crop-image { display: block; }\n    :host([loaded]) [name="loading"]::slotted(*),\n    .crop-image {\n      display: none;\n    }\n    .crop-wrapper {\n      position: relative;\n      font-size: 0;\n    }\n    .crop-container {\n      user-select: none;\n      position: absolute;\n      overflow: hidden;\n      z-index: 1;\n      top: 0;\n      width: 100%;\n      height: 100%;\n    }\n    .crop-box {\n      position: absolute;\n      border: 1px dashed #fff;\n      box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n      box-sizing: border-box;\n      cursor: move;\n    }\n    .handle { position: absolute; }\n    .handle:before {\n      position: absolute;\n      display: block;\n      padding: 4px;\n      transform: translate(-50%, -50%);\n      content: \' \';\n      background: #fff;\n      border: 1px solid #767676;\n    }\n    .ne { top: 0; right: 0; }\n    .nw { top: 0; left: 0; }\n    .se { bottom: 0; right: 0; }\n    .sw { bottom: 0; left: 0; }\n  </style>\n  <slot name="loading"></slot>\n  <div class="crop-wrapper">\n    <img width="100%" class="crop-image">\n    <div class="crop-container">\n      <div class="crop-box">\n        <div class="handle nw nwse"></div>\n        <div class="handle ne nesw"></div>\n        <div class="handle sw nesw"></div>\n        <div class="handle se nwse"></div>\n      </div>\n    </div>\n  </div>\n  <slot></slot>\n';
 
-  var HTMLCustomElement = function (_CustomElement2) {
-    _inherits(HTMLCustomElement, _CustomElement2);
-
-    function HTMLCustomElement(self) {
-      var _this, _ret;
-
-      _classCallCheck(this, HTMLCustomElement);
-
-      self = (_this = _possibleConstructorReturn(this, (HTMLCustomElement.__proto__ || Object.getPrototypeOf(HTMLCustomElement)).call(this, self)), _this);
-      self.init();
-      return _ret = self, _possibleConstructorReturn(_this, _ret);
-    }
-
-    _createClass(HTMLCustomElement, [{
-      key: 'init',
-      value: function init() {
-        return true;
-      }
-    }]);
-
-    return HTMLCustomElement;
-  }(_CustomElement);
-
-  var ImageCropElement = exports.ImageCropElement = function (_HTMLCustomElement) {
-    _inherits(ImageCropElement, _HTMLCustomElement);
+  var ImageCropElement = exports.ImageCropElement = function (_CustomElement2) {
+    _inherits(ImageCropElement, _CustomElement2);
 
     function ImageCropElement() {
       _classCallCheck(this, ImageCropElement);
 
-      return _possibleConstructorReturn(this, (ImageCropElement.__proto__ || Object.getPrototypeOf(ImageCropElement)).apply(this, arguments));
+      var _this = _possibleConstructorReturn(this, (ImageCropElement.__proto__ || Object.getPrototypeOf(ImageCropElement)).call(this));
+
+      _this.startX = null;
+      _this.startY = null;
+      _this.minWidth = 10;
+      _this.attachShadow({ mode: 'open' });
+      _this.shadowRoot.appendChild(tmpl.content.cloneNode(true));
+      _this.image = _this.shadowRoot.querySelector('img');
+      _this.box = _this.shadowRoot.querySelector('.crop-box');
+      return _this;
     }
 
     _createClass(ImageCropElement, [{
-      key: 'init',
-      value: function init() {
-        this.startX = null;
-        this.startY = null;
-        this.minWidth = 10;
-        this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = '\n      <style>\n        :host { display: block; }\n        :host(.nesw), .nesw { cursor: nesw-resize; }\n        :host(.nwse), .nwse { cursor: nwse-resize; }\n        :host(.nesw) .crop-box,\n        :host(.nwse) .crop-box {\n          cursor: inherit;\n        }\n        :host([loaded]) .crop-image { display: block; }\n        :host([loaded]) [name="loading"]::slotted(*),\n        .crop-image {\n          display: none;\n        }\n        .crop-wrapper {\n          position: relative;\n          font-size: 0;\n        }\n        .crop-container {\n          user-select: none;\n          position: absolute;\n          overflow: hidden;\n          z-index: 1;\n          top: 0;\n          width: 100%;\n          height: 100%;\n        }\n        .crop-box {\n          position: absolute;\n          border: 1px dashed #fff;\n          box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);\n          box-sizing: border-box;\n          cursor: move;\n        }\n        .handle { position: absolute; }\n        .handle:before {\n          position: absolute;\n          display: block;\n          padding: 4px;\n          transform: translate(-50%, -50%);\n          content: \' \';\n          background: #fff;\n          border: 1px solid #767676;\n        }\n        .ne { top: 0; right: 0; }\n        .nw { top: 0; left: 0; }\n        .se { bottom: 0; right: 0; }\n        .sw { bottom: 0; left: 0; }\n      </style>\n      <slot name="loading"></slot>\n      <div class="crop-wrapper">\n        <img width="100%" class="crop-image">\n        <div class="crop-container">\n          <div class="crop-box">\n            <div class="handle nw nwse"></div>\n            <div class="handle ne nesw"></div>\n            <div class="handle sw nesw"></div>\n            <div class="handle se nwse"></div>\n          </div>\n        </div>\n      </div>\n      <slot></slot>\n    ';
-        this.image = this.shadowRoot.querySelector('img');
-        this.box = this.shadowRoot.querySelector('.crop-box');
-      }
-    }, {
       key: 'connectedCallback',
       value: function connectedCallback() {
         this.image.addEventListener('load', this.imageReady.bind(this));
@@ -243,7 +220,7 @@
     }]);
 
     return ImageCropElement;
-  }(HTMLCustomElement);
+  }(_CustomElement);
 
   if (!window.customElements.get('image-crop')) {
     window.customElements.define('image-crop', ImageCropElement);
