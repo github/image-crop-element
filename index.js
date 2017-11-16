@@ -29,7 +29,7 @@ tmpl.innerHTML = `
     .crop-box {
       position: absolute;
       border: 1px dashed #fff;
-      box-shadow: 0 0 10000px 10000px rgba(0, 0, 0, .3);
+      box-shadow: 0 0 5000px 5000px rgba(0, 0, 0, .3);
       box-sizing: border-box;
       cursor: move;
     }
@@ -186,8 +186,8 @@ export class ImageCropElement extends HTMLElement {
 
   updateCropArea(event) {
     const rect = this.getBoundingClientRect()
-    const deltaX = event.pageX - this.startX - rect.x - window.scrollX
-    const deltaY = event.pageY - this.startY - rect.y - window.scrollY
+    const deltaX = event.pageX - this.startX - rect.left - window.scrollX
+    const deltaY = event.pageY - this.startY - rect.top - window.scrollY
     this.updateDimensions(deltaX, deltaY)
   }
 
