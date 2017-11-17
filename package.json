@@ -23,7 +23,6 @@
     "url": "git+https://github.com/muan/image-crop-element.git"
   },
   "devDependencies": {
-    "@webcomponents/webcomponentsjs": "^1.0.18",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-custom-element-classes": "^0.1.0",
     "babel-preset-es2015": "^6.24.1",
