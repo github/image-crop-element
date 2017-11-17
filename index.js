@@ -63,7 +63,7 @@ tmpl.innerHTML = `
   <slot></slot>
 `
 
-ShadyCSS.prepareTemplate(tmpl, 'image-crop')
+if (window.ShadyCSS) window.ShadyCSS.prepareTemplate(tmpl, 'image-crop')
 
 export class ImageCropElement extends HTMLElement {
   constructor() {
@@ -74,7 +74,7 @@ export class ImageCropElement extends HTMLElement {
   }
 
   connectedCallback() {
-    ShadyCSS.styleElement(this)
+    if (window.ShadyCSS) window.ShadyCSS.styleElement(this)
 
     this.attachShadow({mode: 'open'})
     this.shadowRoot.appendChild(document.importNode(tmpl.content, true))
