@@ -1,8 +1,11 @@
 {
   "name": "image-crop-element",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Select area for cropping an image. This does not actually crop.",
   "main": "dist/index-umd.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "prebuild": "npm run clean && mkdir dist",
     "prepublishOnly": "npm run build",
