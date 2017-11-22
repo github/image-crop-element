@@ -66,6 +66,10 @@ export class ImageCropElement extends HTMLElement {
           </div>
         </div>
       </div>
+      <slot name="x-input"></slot>
+      <slot name="y-input"></slot>
+      <slot name="width-input"></slot>
+      <slot name="height-input"></slot>
       <slot></slot>
     `
     this.image = this.shadowRoot.querySelector('img')
@@ -186,7 +190,10 @@ export class ImageCropElement extends HTMLElement {
   fireChangeEvent(result) {
     const ratio = this.image.naturalWidth / this.image.width
     for (const key in result) {
-      result[key] = Math.round(result[key] * ratio)
+      const value = Math.round(result[key] * ratio)
+      result[key] = value
+      const slottedInput = this.shadowRoot.querySelector(`[name='${key}-input']`).assignedNodes()
+      if (slottedInput[0] && slottedInput[0].tagName === 'INPUT') slottedInput[0].value = value
     }
 
     this.dispatchEvent(new CustomEvent('image-crop-change', {bubbles: true, detail: result}))
