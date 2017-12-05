@@ -1,4 +1,4 @@
-<!doctype>
+<!doctype html>
 <html lang="en">
 <head>
   <style>
@@ -26,10 +26,10 @@
 
   <script type="text/javascript">
     document.addEventListener('image-crop-change', function(event) {
-      const textContainer = event.target.querySelector('code')
+      var textContainer = event.target.querySelector('code')
       textContainer.textContent = ''
-      for(const key in event.detail) {
-        textContainer.textContent += `${key}: ${event.detail[key]} `
+      for(var key in event.detail) {
+        textContainer.textContent += key + ': ' + event.detail[key] + ' '
       }
     })
   </script>
