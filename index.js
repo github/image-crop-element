@@ -9,7 +9,7 @@ tmpl.innerHTML = `
       cursor: inherit;
     }
     :host([loaded]) .crop-image { display: block; }
-    :host([loaded]) .crop-loading ::slotted(*),
+    :host([loaded]) [name="loading"]::slotted(*),
     .crop-image {
       display: none;
     }
@@ -48,7 +48,7 @@ tmpl.innerHTML = `
     .se { bottom: 0; right: 0; }
     .sw { bottom: 0; left: 0; }
   </style>
-  <div class="crop-loading"><slot name="loading"></slot></div>
+  <slot name="loading"></slot>
   <div class="crop-wrapper">
     <img width="100%" class="crop-image">
     <div class="crop-container">
@@ -60,6 +60,10 @@ tmpl.innerHTML = `
       </div>
     </div>
   </div>
+  <slot name="x-input"></slot>
+  <slot name="y-input"></slot>
+  <slot name="width-input"></slot>
+  <slot name="height-input"></slot>
   <slot></slot>
 `
 
@@ -134,6 +138,7 @@ export class ImageCropElement extends HTMLElement {
   }
 
   stopUpdate() {
+    this.dragStartX = this.dragStartY = null
     this.classList.remove('nwse', 'nesw')
     this.removeEventListener('mousemove', this.updateCropArea)
     this.removeEventListener('mousemove', this.moveCropArea)
@@ -176,25 +181,39 @@ export class ImageCropElement extends HTMLElement {
   }
 
   moveCropArea(event) {
-    const x = Math.min(Math.max(0, this.box.offsetLeft + event.movementX), this.image.width - this.box.offsetWidth)
-    const y = Math.min(Math.max(0, this.box.offsetTop + event.movementY), this.image.height - this.box.offsetHeight)
-    this.box.style.left = `${x}px`
-    this.box.style.top = `${y}px`
+    if (this.dragStartX && this.dragStartY) {
+      const x = Math.min(
+        Math.max(0, this.box.offsetLeft + event.pageX - this.dragStartX),
+        this.image.width - this.box.offsetWidth
+      )
+      const y = Math.min(
+        Math.max(0, this.box.offsetTop + event.pageY - this.dragStartY),
+        this.image.height - this.box.offsetHeight
+      )
+      this.box.style.left = `${x}px`
+      this.box.style.top = `${y}px`
 
-    this.fireChangeEvent({x, y, width: this.box.offsetWidth, height: this.box.offsetHeight})
+      this.fireChangeEvent({x, y, width: this.box.offsetWidth, height: this.box.offsetHeight})
+    }
+
+    this.dragStartX = event.pageX
+    this.dragStartY = event.pageY
   }
 
   updateCropArea(event) {
     const rect = this.getBoundingClientRect()
-    const deltaX = event.pageX - this.startX - rect.left - window.scrollX
-    const deltaY = event.pageY - this.startY - rect.top - window.scrollY
+    const deltaX = event.pageX - this.startX - rect.left - window.pageXOffset
+    const deltaY = event.pageY - this.startY - rect.top - window.pageYOffset
     this.updateDimensions(deltaX, deltaY)
   }
 
   fireChangeEvent(result) {
     const ratio = this.image.naturalWidth / this.image.width
     for (const key in result) {
-      result[key] = Math.round(result[key] * ratio)
+      const value = Math.round(result[key] * ratio)
+      result[key] = value
+      const slottedInput = this.shadowRoot.querySelector(`[name='${key}-input']`).assignedNodes()
+      if (slottedInput[0] && slottedInput[0].tagName === 'INPUT') slottedInput[0].value = value
     }
 
     this.dispatchEvent(new CustomEvent('image-crop-change', {bubbles: true, detail: result}))

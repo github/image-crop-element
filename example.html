@@ -21,18 +21,11 @@
 <body>
   <image-crop src="ams.jpg" class="wrapper">
     <div slot="loading" class="loading">loading</div>
-    <code></code>
+    <input type="text" slot="x-input" name="x" size="4" aria-label="x">
+    <input type="text" slot="y-input" name="y" size="4" aria-label="y">
+    <input type="text" slot="width-input" name="width" size="4" aria-label="width">
+    <input type="text" slot="height-input" name="height" size="4" aria-label="height">
   </image-crop>
   <image-crop src="floyen.jpg" class="wrapper"><code></code></image-crop>
-
-  <script type="text/javascript">
-    document.addEventListener('image-crop-change', function(event) {
-      var textContainer = event.target.querySelector('code')
-      textContainer.textContent = ''
-      for(var key in event.detail) {
-        textContainer.textContent += key + ': ' + event.detail[key] + ' '
-      }
-    })
-  </script>
 </body>
 </html>
