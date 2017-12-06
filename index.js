@@ -130,6 +130,7 @@ export class ImageCropElement extends HTMLElement {
   }
 
   stopUpdate() {
+    this.dragStartX = this.dragStartY = null
     this.classList.remove('nwse', 'nesw')
     this.removeEventListener('mousemove', this.updateCropArea)
     this.removeEventListener('mousemove', this.moveCropArea)
@@ -172,12 +173,23 @@ export class ImageCropElement extends HTMLElement {
   }
 
   moveCropArea(event) {
-    const x = Math.min(Math.max(0, this.box.offsetLeft + event.movementX), this.image.width - this.box.offsetWidth)
-    const y = Math.min(Math.max(0, this.box.offsetTop + event.movementY), this.image.height - this.box.offsetHeight)
-    this.box.style.left = `${x}px`
-    this.box.style.top = `${y}px`
+    if (this.dragStartX && this.dragStartY) {
+      const x = Math.min(
+        Math.max(0, this.box.offsetLeft + event.pageX - this.dragStartX),
+        this.image.width - this.box.offsetWidth
+      )
+      const y = Math.min(
+        Math.max(0, this.box.offsetTop + event.pageY - this.dragStartY),
+        this.image.height - this.box.offsetHeight
+      )
+      this.box.style.left = `${x}px`
+      this.box.style.top = `${y}px`
 
-    this.fireChangeEvent({x, y, width: this.box.offsetWidth, height: this.box.offsetHeight})
+      this.fireChangeEvent({x, y, width: this.box.offsetWidth, height: this.box.offsetHeight})
+    }
+
+    this.dragStartX = event.pageX
+    this.dragStartY = event.pageY
   }
 
   updateCropArea(event) {
