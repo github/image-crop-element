@@ -20,6 +20,17 @@ Polyfills for [Custom Elements, Shadow DOM](https://github.com/webcomponents/web
 </image-crop>
 ```
 
+### With autoupdate inputs
+
+```html
+<image-crop src="/avatar.jpg">
+  <input type="hidden" slot="x-input" name="x">
+  <input type="hidden" slot="y-input" name="y">
+  <input type="hidden" slot="width-input" name="width">
+  <input type="hidden" slot="height-input" name="height">
+</image-crop>
+```
+
 ### Listen to the change event
 
 ```javascript
