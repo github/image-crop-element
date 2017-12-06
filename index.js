@@ -1,77 +1,84 @@
+const tmpl = document.createElement('template')
+tmpl.innerHTML = `
+  <style>
+    :host { display: block; }
+    :host(.nesw), .nesw { cursor: nesw-resize; }
+    :host(.nwse), .nwse { cursor: nwse-resize; }
+    :host(.nesw) .crop-box,
+    :host(.nwse) .crop-box {
+      cursor: inherit;
+    }
+    :host([loaded]) .crop-image { display: block; }
+    :host([loaded]) .loading-slot,
+    .crop-image {
+      display: none;
+    }
+    .crop-wrapper {
+      position: relative;
+      font-size: 0;
+    }
+    .crop-container {
+      user-select: none;
+      position: absolute;
+      overflow: hidden;
+      z-index: 1;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .crop-box {
+      position: absolute;
+      border: 1px dashed #fff;
+      box-shadow: 0 0 5000px 5000px rgba(0, 0, 0, .3);
+      box-sizing: border-box;
+      cursor: move;
+    }
+    .handle { position: absolute; }
+    .handle:before {
+      position: absolute;
+      display: block;
+      padding: 4px;
+      transform: translate(-50%, -50%);
+      content: ' ';
+      background: #fff;
+      border: 1px solid #767676;
+    }
+    .ne { top: 0; right: 0; }
+    .nw { top: 0; left: 0; }
+    .se { bottom: 0; right: 0; }
+    .sw { bottom: 0; left: 0; }
+  </style>
+  <div class="loading-slot"><slot name="loading"></slot></div>
+  <div class="crop-wrapper">
+    <img width="100%" class="crop-image">
+    <div class="crop-container">
+      <div class="crop-box">
+        <div class="handle nw nwse"></div>
+        <div class="handle ne nesw"></div>
+        <div class="handle sw nesw"></div>
+        <div class="handle se nwse"></div>
+      </div>
+    </div>
+  </div>
+  <slot name="x-input"></slot>
+  <slot name="y-input"></slot>
+  <slot name="width-input"></slot>
+  <slot name="height-input"></slot>
+  <slot></slot>
+`
+
+if (window.ShadyCSS) window.ShadyCSS.prepareTemplate(tmpl, 'image-crop')
+
 export class ImageCropElement extends HTMLElement {
   constructor() {
     super()
     this.startX = null
     this.startY = null
     this.minWidth = 10
+
+    if (window.ShadyCSS) window.ShadyCSS.styleElement(this)
     this.attachShadow({mode: 'open'})
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host { display: block; }
-        :host(.nesw), .nesw { cursor: nesw-resize; }
-        :host(.nwse), .nwse { cursor: nwse-resize; }
-        :host(.nesw) .crop-box,
-        :host(.nwse) .crop-box {
-          cursor: inherit;
-        }
-        :host([loaded]) .crop-image { display: block; }
-        :host([loaded]) [name="loading"]::slotted(*),
-        .crop-image {
-          display: none;
-        }
-        .crop-wrapper {
-          position: relative;
-          font-size: 0;
-        }
-        .crop-container {
-          user-select: none;
-          position: absolute;
-          overflow: hidden;
-          z-index: 1;
-          top: 0;
-          width: 100%;
-          height: 100%;
-        }
-        .crop-box {
-          position: absolute;
-          border: 1px dashed #fff;
-          box-shadow: 0 0 5000px 5000px rgba(0, 0, 0, .3);
-          box-sizing: border-box;
-          cursor: move;
-        }
-        .handle { position: absolute; }
-        .handle:before {
-          position: absolute;
-          display: block;
-          padding: 4px;
-          transform: translate(-50%, -50%);
-          content: ' ';
-          background: #fff;
-          border: 1px solid #767676;
-        }
-        .ne { top: 0; right: 0; }
-        .nw { top: 0; left: 0; }
-        .se { bottom: 0; right: 0; }
-        .sw { bottom: 0; left: 0; }
-      </style>
-      <slot name="loading"></slot>
-      <div class="crop-wrapper">
-        <img width="100%" class="crop-image">
-        <div class="crop-container">
-          <div class="crop-box">
-            <div class="handle nw nwse"></div>
-            <div class="handle ne nesw"></div>
-            <div class="handle sw nesw"></div>
-            <div class="handle se nwse"></div>
-          </div>
-        </div>
-      </div>
-      <slot name="x-input"></slot>
-      <slot name="y-input"></slot>
-      <slot name="width-input"></slot>
-      <slot name="height-input"></slot>
-      <slot></slot>
-    `
+    this.shadowRoot.appendChild(document.importNode(tmpl.content, true))
     this.image = this.shadowRoot.querySelector('img')
     this.box = this.shadowRoot.querySelector('.crop-box')
   }
@@ -116,7 +123,7 @@ export class ImageCropElement extends HTMLElement {
   attributeChangedCallback(attribute, oldValue, newValue) {
     if (attribute === 'src') {
       this.loaded = false
-      this.image.src = newValue
+      if (this.image) this.image.src = newValue
     }
   }
 
