@@ -2,7 +2,7 @@
 
 This loads an image and creates a crop area that user can modify. An event is fired with x, y, width, and height as the crop area changes.
 
-Polyfills for [Custom Elements, Shadow DOM](https://github.com/webcomponents/webcomponentsjs), and `Reflect.construct` are required. See `example.html`.
+Polyfills for [Custom Elements, Shadow DOM](https://github.com/webcomponents/webcomponentsjs), and `Reflect.construct` are required. See `polyfill.html`.
 
 ## Usage
 
