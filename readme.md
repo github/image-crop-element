@@ -1,8 +1,8 @@
 # &lt;image-crop-element&gt;
 
-This loads an image and creates a crop area user can change. Upon changing, an event is fired with x, y, width, and height.
+This loads an image and creates a crop area that user can modify. An event is fired with x, y, width, and height as the crop area changes.
 
-This is a [Custom Element](https://developers.google.com/web/fundamentals/web-components/customelements) with [Shadow DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom). You'll need to use [a polyfill](https://www.webcomponents.org/polyfills) to use this today.
+Polyfills for [Custom Elements, Shadow DOM](https://github.com/webcomponents/webcomponentsjs), and `Reflect.construct` are required. See `example.html`.
 
 ## Usage
 
