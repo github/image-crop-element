@@ -79,12 +79,11 @@ export class ImageCropElement extends HTMLElement {
     if (window.ShadyCSS) window.ShadyCSS.styleElement(this)
     this.attachShadow({mode: 'open'})
     this.shadowRoot.appendChild(document.importNode(tmpl.content, true))
+    this.image = this.shadowRoot.querySelector('img')
+    this.box = this.shadowRoot.querySelector('.crop-box')
   }
 
   connectedCallback() {
-    this.image = this.shadowRoot.querySelector('img')
-    this.box = this.shadowRoot.querySelector('.crop-box')
-
     this.image.addEventListener('load', this.imageReady.bind(this))
     this.addEventListener('mouseleave', this.stopUpdate)
     this.addEventListener('mouseup', this.stopUpdate)
