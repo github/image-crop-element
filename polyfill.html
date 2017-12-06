@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <style>
+    .wrapper {
+      width: 500px;
+      margin: 30px auto;
+    }
+    .loading {
+      background: #f0f0f0;
+      text-align: center;
+      padding: 100px 30px;
+    }
+  </style>
+  <meta charset="utf-8">
+  <!-- Uncomment for testing: Polyfill for IE11 (Reflect.construct) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-shim.min.js"></script>
+  <!-- Uncomment for testing: Polyfill for Firefox, Edge, and IE11 -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.20/webcomponents-lite.js"></script>
+  <!-- Uncomment for testing: Build file -->
+  <script type="text/javascript" src="https://unpkg.com/image-crop-element@1.0.2/dist/index-umd.js"></script>
+  <title>image-crop-element demo</title>
+</head>
+<body>
+  <image-crop src="ams.jpg" class="wrapper">
+    <div slot="loading" class="loading">loading</div>
+    <input type="text" slot="x-input" name="x" size="4" aria-label="x">
+    <input type="text" slot="y-input" name="y" size="4" aria-label="y">
+    <input type="text" slot="width-input" name="width" size="4" aria-label="width">
+    <input type="text" slot="height-input" name="height" size="4" aria-label="height">
+  </image-crop>
+  <image-crop src="floyen.jpg" class="wrapper"><code></code></image-crop>
+</body>
+</html>
