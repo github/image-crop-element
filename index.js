@@ -9,7 +9,7 @@ tmpl.innerHTML = `
       cursor: inherit;
     }
     :host([loaded]) .crop-image { display: block; }
-    :host([loaded]) [name="loading"]::slotted(*),
+    :host([loaded]) .loading-slot,
     .crop-image {
       display: none;
     }
@@ -48,7 +48,7 @@ tmpl.innerHTML = `
     .se { bottom: 0; right: 0; }
     .sw { bottom: 0; left: 0; }
   </style>
-  <slot name="loading"></slot>
+  <div class="loading-slot"><slot name="loading"></slot></div>
   <div class="crop-wrapper">
     <img width="100%" class="crop-image">
     <div class="crop-container">
