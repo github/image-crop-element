@@ -182,8 +182,8 @@ export class ImageCropElement extends HTMLElement {
 
   updateCropArea(event) {
     const rect = this.getBoundingClientRect()
-    const deltaX = event.pageX - this.startX - rect.left - window.scrollX
-    const deltaY = event.pageY - this.startY - rect.top - window.scrollY
+    const deltaX = event.pageX - this.startX - rect.left - window.pageXOffset
+    const deltaY = event.pageY - this.startY - rect.top - window.pageYOffset
     this.updateDimensions(deltaX, deltaY)
   }
 
