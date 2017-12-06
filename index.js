@@ -75,13 +75,13 @@ export class ImageCropElement extends HTMLElement {
     this.startX = null
     this.startY = null
     this.minWidth = 10
+
+    if (window.ShadyCSS) window.ShadyCSS.styleElement(this)
+    this.attachShadow({mode: 'open'})
+    this.shadowRoot.appendChild(document.importNode(tmpl.content, true))
   }
 
   connectedCallback() {
-    if (window.ShadyCSS) window.ShadyCSS.styleElement(this)
-
-    this.attachShadow({mode: 'open'})
-    this.shadowRoot.appendChild(document.importNode(tmpl.content, true))
     this.image = this.shadowRoot.querySelector('img')
     this.box = this.shadowRoot.querySelector('.crop-box')
 
