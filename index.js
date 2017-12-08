@@ -19,6 +19,9 @@ tmpl.innerHTML = `
     }
     .crop-container {
       user-select: none;
+      -ms-user-select: none;
+      -moz-user-select: none;
+      -webkit-user-select: none;
       position: absolute;
       overflow: hidden;
       z-index: 1;
@@ -29,7 +32,7 @@ tmpl.innerHTML = `
     .crop-box {
       position: absolute;
       border: 1px dashed #fff;
-      box-shadow: 0 0 5000px 5000px rgba(0, 0, 0, .3);
+      outline: 600px solid rgba(0, 0, 0, .3);
       box-sizing: border-box;
       cursor: move;
     }
