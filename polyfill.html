@@ -13,6 +13,7 @@
     }
   </style>
   <meta charset="utf-8">
+  <link href="./index.css" rel="stylesheet">
   <!-- Uncomment for testing: Polyfill for IE11 (Reflect.construct) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-shim.min.js"></script>
   <!-- Uncomment for testing: Polyfill for Firefox, Edge, and IE11 -->
@@ -23,11 +24,11 @@
 </head>
 <body>
   <image-crop src="ams.jpg" class="wrapper">
-    <div slot="loading" class="loading">loading</div>
-    <input type="text" slot="x-input" name="x" size="4" aria-label="x">
-    <input type="text" slot="y-input" name="y" size="4" aria-label="y">
-    <input type="text" slot="width-input" name="width" size="4" aria-label="width">
-    <input type="text" slot="height-input" name="height" size="4" aria-label="height">
+    <div class="ic-loading-slot loading">loading</div>
+    <input type="text" class="ic-x-input" name="x" size="4" aria-label="x">
+    <input type="text" class="ic-y-input" name="y" size="4" aria-label="y">
+    <input type="text" class="ic-width-input" name="width" size="4" aria-label="width">
+    <input type="text" class="ic-height-input" name="height" size="4" aria-label="height">
   </image-crop>
 </body>
 </html>

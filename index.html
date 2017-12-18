@@ -13,16 +13,17 @@
     }
   </style>
   <meta charset="utf-8">
+  <link href="./index.css" rel="stylesheet">
   <script type="module" src="index.js"></script>
   <title>image-crop-element demo</title>
 </head>
 <body>
   <image-crop src="ams.jpg" class="wrapper">
-    <div slot="loading" class="loading">loading</div>
-    <input type="text" slot="x-input" name="x" size="4" aria-label="x">
-    <input type="text" slot="y-input" name="y" size="4" aria-label="y">
-    <input type="text" slot="width-input" name="width" size="4" aria-label="width">
-    <input type="text" slot="height-input" name="height" size="4" aria-label="height">
+    <div class="ic-loading-slot loading">loading</div>
+    <input type="text" class="ic-x-input" name="x" size="4" aria-label="x">
+    <input type="text" class="ic-y-input" name="y" size="4" aria-label="y">
+    <input type="text" class="ic-width-input" name="width" size="4" aria-label="width">
+    <input type="text" class="ic-height-input" name="height" size="4" aria-label="height">
   </image-crop>
 </body>
 </html>
