@@ -20,13 +20,16 @@ export class ImageCropElement extends HTMLElement {
     this.startX = null
     this.startY = null
     this.minWidth = 10
+  }
+
+  connectedCallback() {
+    if (this.constructed) return
+    this.constructed = true
 
     this.appendChild(document.importNode(tmpl.content, true))
     this.image = this.querySelector('img')
     this.box = this.querySelector('.crop-box')
-  }
 
-  connectedCallback() {
     this.image.addEventListener('load', this.imageReady.bind(this))
     this.addEventListener('mouseleave', this.stopUpdate)
     this.addEventListener('mouseup', this.stopUpdate)
