@@ -5,10 +5,10 @@ tmpl.innerHTML = `
     <div class="_crop-container">
       <div data-crop-box class="_crop-box">
         <div class="_crop-outline"></div>
-        <div data-handle data-direction="nw" class="_handle _nw"></div>
-        <div data-handle data-direction="ne" class="_handle _ne"></div>
-        <div data-handle data-direction="sw" class="_handle _sw"></div>
-        <div data-handle data-direction="se" class="_handle _se"></div>
+        <div data-direction="nw" class="_handle _nw"></div>
+        <div data-direction="ne" class="_handle _ne"></div>
+        <div data-direction="sw" class="_handle _sw"></div>
+        <div data-direction="se" class="_handle _se"></div>
       </div>
     </div>
   </div>
@@ -90,7 +90,7 @@ export class ImageCropElement extends HTMLElement {
   }
 
   startUpdate(event) {
-    if (event.target.hasAttribute('data-handle')) {
+    if (event.target.hasAttribute('data-direction')) {
       const direction = event.target.getAttribute('data-direction')
       // Change crop area
       this.addEventListener('mousemove', this.updateCropArea)
