@@ -1,14 +1,14 @@
 const tmpl = document.createElement('template')
 tmpl.innerHTML = `
-  <div class="crop-wrapper">
-    <img width="100%" class="crop-image">
-    <div class="crop-container">
-      <div class="crop-box">
-        <div class="crop-outline"></div>
-        <div class="handle nw nwse"></div>
-        <div class="handle ne nesw"></div>
-        <div class="handle sw nesw"></div>
-        <div class="handle se nwse"></div>
+  <div class="_crop-wrapper">
+    <img width="100%" class="_crop-image">
+    <div class="_crop-container">
+      <div data-crop-box class="_crop-box">
+        <div class="_crop-outline"></div>
+        <div data-handle data-direction="nw" class="_handle _nw _nwse"></div>
+        <div data-handle data-direction="ne" class="_handle _ne _nesw"></div>
+        <div data-handle data-direction="sw" class="_handle _sw _nesw"></div>
+        <div data-handle data-direction="se" class="_handle _se _nwse"></div>
       </div>
     </div>
   </div>
@@ -28,7 +28,7 @@ export class ImageCropElement extends HTMLElement {
 
     this.appendChild(document.importNode(tmpl.content, true))
     this.image = this.querySelector('img')
-    this.box = this.querySelector('.crop-box')
+    this.box = this.querySelector('[data-crop-box]')
 
     this.image.addEventListener('load', this.imageReady.bind(this))
     this.addEventListener('mouseleave', this.stopUpdate)
@@ -90,16 +90,14 @@ export class ImageCropElement extends HTMLElement {
   }
 
   startUpdate(event) {
-    const classList = event.target.classList
-    if (classList.contains('handle')) {
+    if (event.target.hasAttribute('data-handle')) {
+      const direction = event.target.getAttribute('data-direction')
       // Change crop area
       this.addEventListener('mousemove', this.updateCropArea)
-      if (classList.contains('nwse')) this.classList.add('nwse')
-      if (classList.contains('nesw')) this.classList.add('nesw')
-      this.startX =
-        this.box.offsetLeft + (classList.contains('se') || classList.contains('ne') ? 0 : this.box.offsetWidth)
-      this.startY =
-        this.box.offsetTop + (classList.contains('se') || classList.contains('sw') ? 0 : this.box.offsetHeight)
+      if (['nw', 'se'].indexOf(direction) >= 0) this.classList.add('nwse')
+      if (['ne', 'sw'].indexOf(direction) >= 0) this.classList.add('nesw')
+      this.startX = this.box.offsetLeft + (['se', 'ne'].indexOf(direction) >= 0 ? 0 : this.box.offsetWidth)
+      this.startY = this.box.offsetTop + (['se', 'sw'].indexOf(direction) >= 0 ? 0 : this.box.offsetHeight)
       this.updateCropArea(event)
     } else {
       // Move crop area
@@ -157,7 +155,7 @@ export class ImageCropElement extends HTMLElement {
     for (const key in result) {
       const value = Math.round(result[key] * ratio)
       result[key] = value
-      const slottedInput = this.querySelector(`.ic-${key}-input`)
+      const slottedInput = this.querySelector(`[data-image-crop-input='${key}']`)
       if (slottedInput) slottedInput.value = value
     }
 

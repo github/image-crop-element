@@ -16,7 +16,7 @@ Polyfills for [Custom Elements](https://github.com/webcomponents/webcomponentsjs
 
 ```html
 <image-crop src="/avatar.jpg">
-  <img class="ic-loading-slot" src="spinner.gif" alt="" />
+  <img src="spinner.gif" alt="" data-loading-slot>
 </image-crop>
 ```
 
@@ -24,10 +24,10 @@ Polyfills for [Custom Elements](https://github.com/webcomponents/webcomponentsjs
 
 ```html
 <image-crop src="/avatar.jpg">
-  <input type="hidden" class="ic-x-input" name="x">
-  <input type="hidden" class="ic-y-input" name="y">
-  <input type="hidden" class="ic-width-input" name="width">
-  <input type="hidden" class="ic-height-input" name="height">
+  <input type="hidden" data-image-crop-input="x" name="x">
+  <input type="hidden" data-image-crop-input="y" name="y">
+  <input type="hidden" data-image-crop-input="width" name="width">
+  <input type="hidden" data-image-crop-input="height" name="height">
 </image-crop>
 ```
 
