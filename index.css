@@ -1,6 +1,6 @@
 image-crop { display: block; }
-image-crop._nesw, image-crop ._nesw { cursor: nesw-resize; }
-image-crop._nwse, image-crop ._nwse { cursor: nwse-resize; }
+image-crop._nesw { cursor: nesw-resize; }
+image-crop._nwse { cursor: nwse-resize; }
 image-crop._nesw ._crop-box,
 image-crop._nwse ._crop-box {
   cursor: inherit;
@@ -50,7 +50,7 @@ image-crop ._handle:before {
   background: #fff;
   border: 1px solid #767676;
 }
-image-crop ._ne { top: 0; right: 0; }
-image-crop ._nw { top: 0; left: 0; }
-image-crop ._se { bottom: 0; right: 0; }
-image-crop ._sw { bottom: 0; left: 0; }
+image-crop ._ne { top: 0; right: 0; cursor: nesw-resize; }
+image-crop ._nw { top: 0; left: 0; cursor: nwse-resize; }
+image-crop ._se { bottom: 0; right: 0; cursor: nwse-resize; }
+image-crop ._sw { bottom: 0; left: 0; cursor: nesw-resize; }

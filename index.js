@@ -5,10 +5,10 @@ tmpl.innerHTML = `
     <div class="_crop-container">
       <div data-crop-box class="_crop-box">
         <div class="_crop-outline"></div>
-        <div data-handle data-direction="nw" class="_handle _nw _nwse"></div>
-        <div data-handle data-direction="ne" class="_handle _ne _nesw"></div>
-        <div data-handle data-direction="sw" class="_handle _sw _nesw"></div>
-        <div data-handle data-direction="se" class="_handle _se _nwse"></div>
+        <div data-handle data-direction="nw" class="_handle _nw"></div>
+        <div data-handle data-direction="ne" class="_handle _ne"></div>
+        <div data-handle data-direction="sw" class="_handle _sw"></div>
+        <div data-handle data-direction="se" class="_handle _se"></div>
       </div>
     </div>
   </div>
