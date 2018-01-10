@@ -1,7 +1,7 @@
 const tmpl = document.createElement('template')
 tmpl.innerHTML = `
   <div class="crop-wrapper">
-    <img width="100%" class="crop-image">
+    <img width="100%" class="crop-image" alt="">
     <div class="crop-container">
       <div data-crop-box class="crop-box">
         <div class="crop-outline"></div>
