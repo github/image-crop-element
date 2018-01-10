@@ -1,14 +1,14 @@
 const tmpl = document.createElement('template')
 tmpl.innerHTML = `
-  <div class="_crop-wrapper">
-    <img width="100%" class="_crop-image">
-    <div class="_crop-container">
-      <div data-crop-box class="_crop-box">
-        <div class="_crop-outline"></div>
-        <div data-direction="nw" class="_handle _nw"></div>
-        <div data-direction="ne" class="_handle _ne"></div>
-        <div data-direction="sw" class="_handle _sw"></div>
-        <div data-direction="se" class="_handle _se"></div>
+  <div class="crop-wrapper">
+    <img width="100%" class="crop-image">
+    <div class="crop-container">
+      <div data-crop-box class="crop-box">
+        <div class="crop-outline"></div>
+        <div data-direction="nw" class="handle nw"></div>
+        <div data-direction="ne" class="handle ne"></div>
+        <div data-direction="sw" class="handle sw"></div>
+        <div data-direction="se" class="handle se"></div>
       </div>
     </div>
   </div>
