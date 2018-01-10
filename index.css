@@ -1,0 +1,56 @@
+image-crop { display: block; }
+image-crop.nesw { cursor: nesw-resize; }
+image-crop.nwse { cursor: nwse-resize; }
+image-crop.nesw .crop-box,
+image-crop.nwse .crop-box {
+  cursor: inherit;
+}
+image-crop[loaded] .crop-image { display: block; }
+image-crop[loaded] [data-loading-slot],
+image-crop .crop-image {
+  display: none;
+}
+image-crop .crop-wrapper {
+  position: relative;
+  font-size: 0;
+}
+image-crop .crop-container {
+  user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  position: absolute;
+  overflow: hidden;
+  z-index: 1;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+image-crop .crop-box {
+  position: absolute;
+  border: 1px dashed #fff;
+  box-sizing: border-box;
+  cursor: move;
+}
+image-crop .crop-outline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  outline: 600px solid rgba(0, 0, 0, .3);
+}
+image-crop .handle { position: absolute; }
+image-crop .handle:before {
+  position: absolute;
+  display: block;
+  padding: 4px;
+  transform: translate(-50%, -50%);
+  content: ' ';
+  background: #fff;
+  border: 1px solid #767676;
+}
+image-crop .ne { top: 0; right: 0; cursor: nesw-resize; }
+image-crop .nw { top: 0; left: 0; cursor: nwse-resize; }
+image-crop .se { bottom: 0; right: 0; cursor: nwse-resize; }
+image-crop .sw { bottom: 0; left: 0; cursor: nesw-resize; }

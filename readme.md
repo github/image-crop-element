@@ -2,7 +2,7 @@
 
 This loads an image and creates a crop area that user can modify. An event is fired with x, y, width, and height as the crop area changes.
 
-Polyfills for [Custom Elements, Shadow DOM](https://github.com/webcomponents/webcomponentsjs), and `Reflect.construct` are required. See `polyfill.html`.
+Polyfills for [Custom Elements](https://github.com/webcomponents/webcomponentsjs), and `Reflect.construct` are required. See `polyfill.html`.
 
 ## Usage
 
@@ -16,7 +16,7 @@ Polyfills for [Custom Elements, Shadow DOM](https://github.com/webcomponents/web
 
 ```html
 <image-crop src="/avatar.jpg">
-  <img slot="loading" src="spinner.gif" alt="" />
+  <img src="spinner.gif" alt="" data-loading-slot>
 </image-crop>
 ```
 
@@ -24,10 +24,10 @@ Polyfills for [Custom Elements, Shadow DOM](https://github.com/webcomponents/web
 
 ```html
 <image-crop src="/avatar.jpg">
-  <input type="hidden" slot="x-input" name="x">
-  <input type="hidden" slot="y-input" name="y">
-  <input type="hidden" slot="width-input" name="width">
-  <input type="hidden" slot="height-input" name="height">
+  <input type="hidden" data-image-crop-input="x" name="x">
+  <input type="hidden" data-image-crop-input="y" name="y">
+  <input type="hidden" data-image-crop-input="width" name="width">
+  <input type="hidden" data-image-crop-input="height" name="height">
 </image-crop>
 ```
 
