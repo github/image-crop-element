@@ -4,7 +4,8 @@
   "description": "Select area for cropping an image. This does not actually crop.",
   "main": "dist/index-umd.js",
   "files": [
-    "dist"
+    "dist",
+    "index.css"
   ],
   "scripts": {
     "prebuild": "npm run clean && mkdir dist",
