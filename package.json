@@ -1,5 +1,5 @@
 {
-  "name": "image-crop-element",
+  "name": "@github/image-crop-element",
   "version": "1.0.7",
   "description": "Select area for cropping an image. This does not actually crop.",
   "main": "dist/index-umd.js",
@@ -24,7 +24,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/muan/image-crop-element.git"
+    "url": "git+https://github.com/github/image-crop-element.git"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
