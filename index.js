@@ -14,6 +14,100 @@ tmpl.innerHTML = `
   </div>
 `
 
+function moveCropArea(event) {
+  const el = event.currentTarget
+  if (el.dragStartX && el.dragStartY) {
+    const x = Math.min(
+      Math.max(0, el.box.offsetLeft + event.pageX - el.dragStartX),
+      el.image.width - el.box.offsetWidth
+    )
+    const y = Math.min(
+      Math.max(0, el.box.offsetTop + event.pageY - el.dragStartY),
+      el.image.height - el.box.offsetHeight
+    )
+    el.box.style.left = `${x}px`
+    el.box.style.top = `${y}px`
+
+    fireChangeEvent(el, {x, y, width: el.box.offsetWidth, height: el.box.offsetHeight})
+  }
+
+  el.dragStartX = event.pageX
+  el.dragStartY = event.pageY
+}
+
+function updateCropArea(event) {
+  const el = event.target.closest('image-crop')
+  const rect = el.getBoundingClientRect()
+  const deltaX = event.pageX - el.startX - rect.left - window.pageXOffset
+  const deltaY = event.pageY - el.startY - rect.top - window.pageYOffset
+  updateDimensions(el, deltaX, deltaY)
+}
+
+function startUpdate(event) {
+  const el = event.currentTarget.closest('image-crop')
+  if (event.target.hasAttribute('data-direction')) {
+    const direction = event.target.getAttribute('data-direction')
+    // Change crop area
+    el.addEventListener('mousemove', updateCropArea)
+    if (['nw', 'se'].indexOf(direction) >= 0) el.classList.add('nwse')
+    if (['ne', 'sw'].indexOf(direction) >= 0) el.classList.add('nesw')
+    el.startX = el.box.offsetLeft + (['se', 'ne'].indexOf(direction) >= 0 ? 0 : el.box.offsetWidth)
+    el.startY = el.box.offsetTop + (['se', 'sw'].indexOf(direction) >= 0 ? 0 : el.box.offsetHeight)
+    updateCropArea(event)
+  } else {
+    // Move crop area
+    el.addEventListener('mousemove', moveCropArea)
+  }
+}
+
+function updateDimensions(target, deltaX, deltaY) {
+  let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), target.minWidth)
+  newSide = Math.min(
+    newSide,
+    deltaY > 0 ? target.image.height - target.startY : target.startY,
+    deltaX > 0 ? target.image.width - target.startX : target.startX
+  )
+
+  const x = Math.round(Math.max(0, deltaX > 0 ? target.startX : target.startX - newSide))
+  const y = Math.round(Math.max(0, deltaY > 0 ? target.startY : target.startY - newSide))
+
+  target.box.style.left = `${x}px`
+  target.box.style.top = `${y}px`
+  target.box.style.width = `${newSide}px`
+  target.box.style.height = `${newSide}px`
+  fireChangeEvent(target, {x, y, width: newSide, height: newSide})
+}
+
+function imageReady(event) {
+  const el = event.currentTarget.closest('image-crop')
+  el.loaded = true
+  const image = event.target
+  const side = Math.round(image.clientWidth > image.clientHeight ? image.clientHeight : image.clientWidth)
+  el.startX = (image.clientWidth - side) / 2
+  el.startY = (image.clientHeight - side) / 2
+  updateDimensions(el, side, side)
+}
+
+function stopUpdate(event) {
+  const el = event.currentTarget
+  el.dragStartX = el.dragStartY = null
+  el.classList.remove('nwse', 'nesw')
+  el.removeEventListener('mousemove', updateCropArea)
+  el.removeEventListener('mousemove', moveCropArea)
+}
+
+function fireChangeEvent(target, result) {
+  const ratio = target.image.naturalWidth / target.image.width
+  for (const key in result) {
+    const value = Math.round(result[key] * ratio)
+    result[key] = value
+    const slottedInput = target.querySelector(`[data-image-crop-input='${key}']`)
+    if (slottedInput) slottedInput.value = value
+  }
+
+  target.dispatchEvent(new CustomEvent('image-crop-change', {bubbles: true, detail: result}))
+}
+
 export class ImageCropElement extends HTMLElement {
   constructor() {
     super()
@@ -30,10 +124,10 @@ export class ImageCropElement extends HTMLElement {
     this.image = this.querySelector('img')
     this.box = this.querySelector('[data-crop-box]')
 
-    this.image.addEventListener('load', this._imageReady.bind(this))
-    this.addEventListener('mouseleave', this._stopUpdate)
-    this.addEventListener('mouseup', this._stopUpdate)
-    this.box.addEventListener('mousedown', this._startUpdate.bind(this))
+    this.image.addEventListener('load', imageReady)
+    this.addEventListener('mouseleave', stopUpdate)
+    this.addEventListener('mouseup', stopUpdate)
+    this.box.addEventListener('mousedown', startUpdate)
 
     if (this.src) this.image.src = this.src
   }
@@ -71,95 +165,6 @@ export class ImageCropElement extends HTMLElement {
       this.loaded = false
       if (this.image) this.image.src = newValue
     }
-  }
-
-  _imageReady(event) {
-    this.loaded = true
-    const image = event.target
-    const side = Math.round(image.clientWidth > image.clientHeight ? image.clientHeight : image.clientWidth)
-    this.startX = (image.clientWidth - side) / 2
-    this.startY = (image.clientHeight - side) / 2
-    this._updateDimensions(side, side)
-  }
-
-  _stopUpdate() {
-    this.dragStartX = this.dragStartY = null
-    this.classList.remove('nwse', 'nesw')
-    this.removeEventListener('mousemove', this._updateCropArea)
-    this.removeEventListener('mousemove', this._moveCropArea)
-  }
-
-  _startUpdate(event) {
-    if (event.target.hasAttribute('data-direction')) {
-      const direction = event.target.getAttribute('data-direction')
-      // Change crop area
-      this.addEventListener('mousemove', this._updateCropArea)
-      if (['nw', 'se'].indexOf(direction) >= 0) this.classList.add('nwse')
-      if (['ne', 'sw'].indexOf(direction) >= 0) this.classList.add('nesw')
-      this.startX = this.box.offsetLeft + (['se', 'ne'].indexOf(direction) >= 0 ? 0 : this.box.offsetWidth)
-      this.startY = this.box.offsetTop + (['se', 'sw'].indexOf(direction) >= 0 ? 0 : this.box.offsetHeight)
-      this._updateCropArea(event)
-    } else {
-      // Move crop area
-      this.addEventListener('mousemove', this._moveCropArea)
-    }
-  }
-
-  _updateDimensions(deltaX, deltaY) {
-    let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), this.minWidth)
-    newSide = Math.min(
-      newSide,
-      deltaY > 0 ? this.image.height - this.startY : this.startY,
-      deltaX > 0 ? this.image.width - this.startX : this.startX
-    )
-
-    const x = Math.round(Math.max(0, deltaX > 0 ? this.startX : this.startX - newSide))
-    const y = Math.round(Math.max(0, deltaY > 0 ? this.startY : this.startY - newSide))
-
-    this.box.style.left = `${x}px`
-    this.box.style.top = `${y}px`
-    this.box.style.width = `${newSide}px`
-    this.box.style.height = `${newSide}px`
-    this._fireChangeEvent({x, y, width: newSide, height: newSide})
-  }
-
-  _moveCropArea(event) {
-    if (this.dragStartX && this.dragStartY) {
-      const x = Math.min(
-        Math.max(0, this.box.offsetLeft + event.pageX - this.dragStartX),
-        this.image.width - this.box.offsetWidth
-      )
-      const y = Math.min(
-        Math.max(0, this.box.offsetTop + event.pageY - this.dragStartY),
-        this.image.height - this.box.offsetHeight
-      )
-      this.box.style.left = `${x}px`
-      this.box.style.top = `${y}px`
-
-      this._fireChangeEvent({x, y, width: this.box.offsetWidth, height: this.box.offsetHeight})
-    }
-
-    this.dragStartX = event.pageX
-    this.dragStartY = event.pageY
-  }
-
-  _updateCropArea(event) {
-    const rect = this.getBoundingClientRect()
-    const deltaX = event.pageX - this.startX - rect.left - window.pageXOffset
-    const deltaY = event.pageY - this.startY - rect.top - window.pageYOffset
-    this._updateDimensions(deltaX, deltaY)
-  }
-
-  _fireChangeEvent(result) {
-    const ratio = this.image.naturalWidth / this.image.width
-    for (const key in result) {
-      const value = Math.round(result[key] * ratio)
-      result[key] = value
-      const slottedInput = this.querySelector(`[data-image-crop-input='${key}']`)
-      if (slottedInput) slottedInput.value = value
-    }
-
-    this.dispatchEvent(new CustomEvent('image-crop-change', {bubbles: true, detail: result}))
   }
 }
 
