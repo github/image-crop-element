@@ -22,10 +22,7 @@
     "custom element"
   ],
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/github/image-crop-element.git"
-  },
+  "repository": "github/image-crop-element",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-custom-element-classes": "^0.1.0",
