@@ -2,7 +2,8 @@
   "name": "@github/image-crop-element",
   "version": "1.1.0",
   "description": "Select area for cropping an image. This does not actually crop.",
-  "main": "dist/index-umd.js",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.esm.js",
   "files": [
     "dist",
     "index.css"
