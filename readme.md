@@ -4,6 +4,12 @@ This loads an image and creates a crop area that user can modify. An event is fi
 
 Polyfills for [Custom Elements](https://github.com/webcomponents/webcomponentsjs), and `Reflect.construct` are required. See `polyfill.html`.
 
+## Installation
+
+```
+$ npm install --save @github/image-crop-element
+```
+
 ## Usage
 
 ### Plain
