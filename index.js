@@ -168,6 +168,9 @@ export class ImageCropElement extends HTMLElement {
   }
 }
 
+export default ImageCropElement
+
 if (!window.customElements.get('image-crop')) {
+  window.ImageCropElement = ImageCropElement
   window.customElements.define('image-crop', ImageCropElement)
 }
