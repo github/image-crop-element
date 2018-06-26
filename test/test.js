@@ -3,6 +3,7 @@ describe('image-crop', function() {
     it('creates from document.createElement', function() {
       const el = document.createElement('image-crop')
       assert.equal('IMAGE-CROP', el.nodeName)
+      assert(el instanceof window.ImageCropElement)
     })
 
     it('creates from constructor', function() {
@@ -28,7 +29,7 @@ describe('image-crop', function() {
       document.body.innerHTML = ''
     })
 
-    it('change event fires and updates input', function(done) {
+    it('fires a change event and updates input', function(done) {
       const ce = document.querySelector('image-crop')
       ce.addEventListener('image-crop-change', function() {
         assert(ce.hasAttribute('loaded'), 'has loaded attribute')
