@@ -2,8 +2,6 @@
 
 This loads an image and creates a crop area that user can modify. An event is fired with x, y, width, and height as the crop area changes.
 
-Polyfills for [Custom Elements](https://github.com/webcomponents/webcomponentsjs), and `Reflect.construct` are required. See `polyfill.html`.
-
 ## Installation
 
 ```
@@ -50,3 +48,17 @@ document.addEventListener('image-crop-change', function (event){
   )
 })
 ```
+
+## Browser support
+
+Browsers without native [custom element support][support] require a [polyfill][]. Legacy browsers require various other polyfills. See [`examples/index.html`][example] for details.
+
+[example]: https://github.com/github/image-crop-element/blob/57080ad88d26e05b42fa10a95470da8035f53967/examples/polyfill.html#L17-L22
+
+- Chrome
+- Firefox
+- Safari
+- Microsoft Edge
+
+[support]: https://caniuse.com/#feat=custom-elementsv1
+[polyfill]: https://github.com/webcomponents/custom-elements
