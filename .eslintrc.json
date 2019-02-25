@@ -2,5 +2,16 @@
   "extends": [
     "plugin:github/es6",
     "plugin:github/browser"
+  ],
+  "overrides": [
+    {
+      "files": "test/**/*.js",
+      "env": {
+        "mocha": true
+      },
+      "globals": {
+        "assert": true
+      }
+    }
   ]
 }
