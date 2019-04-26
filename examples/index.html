@@ -4,7 +4,6 @@
   <style>
     .wrapper {
       width: 500px;
-      margin: 30px auto;
     }
     .loading {
       background: #f0f0f0;
@@ -18,12 +17,14 @@
   <title>image-crop-element demo</title>
 </head>
 <body>
-  <image-crop src="../ams.jpg" class="wrapper" tabindex="0">
-    <div data-loading-slot class="loading">loading</div>
-    <input type="text" data-image-crop-input="x" name="x" size="4" aria-label="x">
-    <input type="text" data-image-crop-input="y" name="y" size="4" aria-label="y">
-    <input type="text" data-image-crop-input="width" name="width" size="4" aria-label="width">
-    <input type="text" data-image-crop-input="height" name="height" size="4" aria-label="height">
-  </image-crop>
+  <form>
+    <image-crop src="../ams.jpg" class="wrapper" tabindex="0" name="dimension">
+      <div data-loading-slot class="loading">loading</div>
+    </image-crop>
+    <button>Submit</button>
+  </form>
+  <script>
+    document.body.prepend(`Got dimensions: ${new URL(location.href).searchParams.get('dimension')}`)
+  </script>
 </body>
 </html>

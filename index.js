@@ -134,14 +134,22 @@ function fireChangeEvent(target, result) {
   for (const key in result) {
     const value = Math.round(result[key] * ratio)
     result[key] = value
-    const slottedInput = target.querySelector(`[data-image-crop-input='${key}']`)
-    if (slottedInput) slottedInput.value = value
+    target.updateValues(result)
   }
 
   target.dispatchEvent(new CustomEvent('image-crop-change', {bubbles: true, detail: result}))
 }
 
+function submit(event) {
+  if (event.key === 'Enter' && event.target.form) event.target.form.submit()
+}
+
 export class ImageCropElement extends HTMLElement {
+  static formAssociated = true
+
+  #internals = this.attachInternals()
+  #disabled = false
+
   constructor() {
     super()
     this.startX = null
@@ -163,6 +171,7 @@ export class ImageCropElement extends HTMLElement {
     this.box.addEventListener('mousedown', startUpdate)
     this.addEventListener('keydown', moveCropArea)
     this.addEventListener('keydown', updateCropArea)
+    this.addEventListener('keydown', submit)
 
     if (this.src) this.image.src = this.src
   }
@@ -193,6 +202,30 @@ export class ImageCropElement extends HTMLElement {
     } else {
       this.removeAttribute('loaded')
     }
+  }
+
+  get type() {
+    return ELEMENT_NAME
+  }
+  get disabled() {
+    return this.#disabled
+  }
+  get form() {
+    return this.#internals.form
+  }
+  get labels() {
+    return this.#internals.labels
+  }
+
+  get name() {
+    return this.getAttribute('name')
+  }
+  set name(value) {
+    return this.setAttribute('name', value)
+  }
+
+  updateValues(result) {
+    this.#internals.setFormValue(Object.values(result).join(','))
   }
 
   attributeChangedCallback(attribute, oldValue, newValue) {
