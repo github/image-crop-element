@@ -228,6 +228,10 @@ export class ImageCropElement extends HTMLElement {
     this.#internals.setFormValue(Object.values(result).join(','))
   }
 
+  formResetCallback() {
+    setInitialPosition(this)
+  }
+
   attributeChangedCallback(attribute, oldValue, newValue) {
     if (attribute === 'src') {
       this.loaded = false
