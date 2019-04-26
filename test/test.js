@@ -17,10 +17,6 @@ describe('image-crop', function() {
       document.body.innerHTML = `
         <image-crop src="http://github.com/github.png?size=123">
           <div data-loading-slot>loading</div>
-          <input type="text" data-image-crop-input="x" name="x" aria-label="x">
-          <input type="text" data-image-crop-input="y" name="y" aria-label="y">
-          <input type="text" data-image-crop-input="width" name="width" aria-label="width">
-          <input type="text" data-image-crop-input="height" name="height" aria-label="height">
         </image-crop>
       `
     })
@@ -30,13 +26,11 @@ describe('image-crop', function() {
     })
 
     it('fires a change event and updates input', function(done) {
+      const values = {x: 0, y: 0, width: 123, height: 123}
       const ce = document.querySelector('image-crop')
-      ce.addEventListener('image-crop-change', function() {
+      ce.addEventListener('image-crop-change', function(event) {
         assert(ce.hasAttribute('loaded'), 'has loaded attribute')
-        assert.equal(document.querySelector('[name=x]').value, '0')
-        assert.equal(document.querySelector('[name=y]').value, '0')
-        assert.equal(document.querySelector('[name=width]').value, '123')
-        assert.equal(document.querySelector('[name=height]').value, '123')
+        assert.deepEqual(event.detail, values)
         done()
       })
     })
