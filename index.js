@@ -101,9 +101,8 @@ function fireChangeEvent(target, result) {
   for (const key in result) {
     const value = Math.round(result[key] * ratio)
     result[key] = value
-    const slottedInput = target.querySelector(`[data-image-crop-input='${key}']`)
-    if (slottedInput) slottedInput.value = value
   }
+  target.result = result
 
   target.dispatchEvent(new CustomEvent('image-crop-change', {bubbles: true, detail: result}))
 }
@@ -119,6 +118,7 @@ export class ImageCropElement extends HTMLElement {
   connectedCallback() {
     if (this.constructed) return
     this.constructed = true
+    this.result = {}
 
     this.appendChild(document.importNode(tmpl.content, true))
     this.image = this.querySelector('img')
@@ -128,6 +128,8 @@ export class ImageCropElement extends HTMLElement {
     this.addEventListener('mouseleave', stopUpdate)
     this.addEventListener('mouseup', stopUpdate)
     this.box.addEventListener('mousedown', startUpdate)
+    const form = this.closest('form')
+    if (form) form.addEventListener('formdata', this.setFormValues.bind(this))
 
     if (this.src) this.image.src = this.src
   }
@@ -157,6 +159,12 @@ export class ImageCropElement extends HTMLElement {
       this.setAttribute('loaded', '')
     } else {
       this.removeAttribute('loaded')
+    }
+  }
+
+  setFormValues(event) {
+    for (const key in this.result) {
+      event.formData.append(key, this.result[key])
     }
   }
 
