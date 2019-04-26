@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <style>
+    body, * {
+      font-family: monospace;
+    }
     .wrapper {
       width: 500px;
     }
@@ -18,13 +21,15 @@
 </head>
 <body>
   <form>
-    <image-crop src="../ams.jpg" class="wrapper" tabindex="0" name="dimension">
+    <label for="crop-target">Image crop</label>
+    <image-crop id="crop-target" src="../ams.jpg" class="wrapper" tabindex="0" name="crop" autofocus>
       <div data-loading-slot class="loading">loading</div>
     </image-crop>
     <button>Submit</button>
   </form>
   <script>
-    document.body.prepend(`Got dimensions: ${new URL(location.href).searchParams.get('dimension')}`)
+    const crop = new URL(location.href).searchParams.get('crop')
+    if (crop) document.body.append(`Form received crop measurements: ${crop}`)
   </script>
 </body>
 </html>
