@@ -16,15 +16,26 @@ tmpl.innerHTML = `
 
 function moveCropArea(event) {
   const el = event.currentTarget
-  if (el.dragStartX && el.dragStartY) {
-    const x = Math.min(
-      Math.max(0, el.box.offsetLeft + event.pageX - el.dragStartX),
-      el.image.width - el.box.offsetWidth
-    )
-    const y = Math.min(
-      Math.max(0, el.box.offsetTop + event.pageY - el.dragStartY),
-      el.image.height - el.box.offsetHeight
-    )
+  let deltaX = 0
+  let deltaY = 0
+  if (event.type === 'keydown') {
+    if (event.key === 'ArrowUp') {
+      deltaY = -1
+    } else if (event.key === 'ArrowDown') {
+      deltaY = 1
+    } else if (event.key === 'ArrowLeft') {
+      deltaX = -1
+    } else if (event.key === 'ArrowRight') {
+      deltaX = 1
+    }
+  } else if (el.dragStartX && el.dragStartY) {
+    deltaX = event.pageX - el.dragStartX
+    deltaY = event.pageY - el.dragStartY
+  }
+
+  if (deltaX !== 0 || deltaY !== 0) {
+    const x = Math.min(Math.max(0, el.box.offsetLeft + deltaX), el.image.width - el.box.offsetWidth)
+    const y = Math.min(Math.max(0, el.box.offsetTop + deltaY), el.image.height - el.box.offsetHeight)
     el.box.style.left = `${x}px`
     el.box.style.top = `${y}px`
 
@@ -38,9 +49,22 @@ function moveCropArea(event) {
 function updateCropArea(event) {
   const el = event.target.closest('image-crop')
   const rect = el.getBoundingClientRect()
-  const deltaX = event.pageX - el.startX - rect.left - window.pageXOffset
-  const deltaY = event.pageY - el.startY - rect.top - window.pageYOffset
-  updateDimensions(el, deltaX, deltaY)
+  let deltaX, deltaY, delta
+  if (event.key) {
+    if (event.key === 'Escape') return setInitialPosition(el)
+    if (event.key === '-') delta = -10
+    if (event.key === '=') delta = +10
+    if (!delta) return
+    deltaX = el.box.offsetWidth + delta
+    deltaY = el.box.offsetHeight + delta
+    el.startX = el.box.offsetLeft
+    el.startY = el.box.offsetTop
+  } else {
+    deltaX = event.pageX - el.startX - rect.left - window.pageXOffset
+    deltaY = event.pageY - el.startY - rect.top - window.pageYOffset
+  }
+
+  if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !event.key)
 }
 
 function startUpdate(event) {
@@ -60,7 +84,7 @@ function startUpdate(event) {
   }
 }
 
-function updateDimensions(target, deltaX, deltaY) {
+function updateDimensions(target, deltaX, deltaY, reposition = true) {
   let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), target.minWidth)
   newSide = Math.min(
     newSide,
@@ -68,11 +92,16 @@ function updateDimensions(target, deltaX, deltaY) {
     deltaX > 0 ? target.image.width - target.startX : target.startX
   )
 
-  const x = Math.round(Math.max(0, deltaX > 0 ? target.startX : target.startX - newSide))
-  const y = Math.round(Math.max(0, deltaY > 0 ? target.startY : target.startY - newSide))
+  const x = reposition
+    ? Math.round(Math.max(0, deltaX > 0 ? target.startX : target.startX - newSide))
+    : target.box.offsetLeft
+  const y = reposition
+    ? Math.round(Math.max(0, deltaY > 0 ? target.startY : target.startY - newSide))
+    : target.box.offsetTop
 
   target.box.style.left = `${x}px`
   target.box.style.top = `${y}px`
+
   target.box.style.width = `${newSide}px`
   target.box.style.height = `${newSide}px`
   fireChangeEvent(target, {x, y, width: newSide, height: newSide})
@@ -81,7 +110,11 @@ function updateDimensions(target, deltaX, deltaY) {
 function imageReady(event) {
   const el = event.currentTarget.closest('image-crop')
   el.loaded = true
-  const image = event.target
+  setInitialPosition(el)
+}
+
+function setInitialPosition(el) {
+  const image = el.image
   const side = Math.round(image.clientWidth > image.clientHeight ? image.clientHeight : image.clientWidth)
   el.startX = (image.clientWidth - side) / 2
   el.startY = (image.clientHeight - side) / 2
@@ -128,6 +161,8 @@ export class ImageCropElement extends HTMLElement {
     this.addEventListener('mouseleave', stopUpdate)
     this.addEventListener('mouseup', stopUpdate)
     this.box.addEventListener('mousedown', startUpdate)
+    this.addEventListener('keydown', moveCropArea)
+    this.addEventListener('keydown', updateCropArea)
 
     if (this.src) this.image.src = this.src
   }
