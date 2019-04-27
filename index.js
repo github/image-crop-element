@@ -148,7 +148,6 @@ export class ImageCropElement extends HTMLElement {
   static formAssociated = true
 
   #internals = this.attachInternals()
-  #disabled = false
 
   constructor() {
     super()
@@ -204,15 +203,10 @@ export class ImageCropElement extends HTMLElement {
     }
   }
 
-  get type() {
-    return ELEMENT_NAME
-  }
-  get disabled() {
-    return this.#disabled
-  }
   get form() {
     return this.#internals.form
   }
+
   get labels() {
     return this.#internals.labels
   }
@@ -220,6 +214,7 @@ export class ImageCropElement extends HTMLElement {
   get name() {
     return this.getAttribute('name')
   }
+
   set name(value) {
     return this.setAttribute('name', value)
   }
