@@ -144,16 +144,17 @@ function submit(event) {
   if (event.key === 'Enter' && event.target.form) event.target.form.submit()
 }
 
+const state = new WeakMap()
+
 export class ImageCropElement extends HTMLElement {
   static formAssociated = true
-
-  #internals = this.attachInternals()
 
   constructor() {
     super()
     this.startX = null
     this.startY = null
     this.minWidth = 10
+    state.set(this, this.attachInternals())
   }
 
   connectedCallback() {
@@ -204,11 +205,13 @@ export class ImageCropElement extends HTMLElement {
   }
 
   get form() {
-    return this.#internals.form
+    const internals = state.get(this)
+    return internals.form
   }
 
   get labels() {
-    return this.#internals.labels
+    const internals = state.get(this)
+    return internals.labels
   }
 
   get name() {
@@ -220,7 +223,8 @@ export class ImageCropElement extends HTMLElement {
   }
 
   updateValues(result) {
-    this.#internals.setFormValue(Object.values(result).join(','))
+    const internals = state.get(this)
+    internals.setFormValue(Object.values(result).join(','))
   }
 
   formResetCallback() {
