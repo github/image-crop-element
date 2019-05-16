@@ -148,6 +148,8 @@ export class ImageCropElement extends HTMLElement {
   box: HTMLElement
   constructed: boolean
   minWidth: number
+  dragStartX: ?number
+  dragStartY: ?number
 
   constructor() {
     super()
