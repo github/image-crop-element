@@ -18,6 +18,8 @@ tmpl.innerHTML = `
 
 function moveCropArea(event: MouseEvent | KeyboardEvent) {
   const el = event.currentTarget
+  if (!(el instanceof ImageCropElement)) return
+
   let deltaX = 0
   let deltaY = 0
   if (event.type === 'keydown') {
@@ -50,6 +52,8 @@ function moveCropArea(event: MouseEvent | KeyboardEvent) {
 
 function updateCropArea(event: MouseEvent | KeyboardEvent) {
   const el = event.target.closest('image-crop')
+  if (!(el instanceof ImageCropElement)) return
+
   const rect = el.getBoundingClientRect()
   let deltaX, deltaY, delta
   if (event.key) {
@@ -71,6 +75,8 @@ function updateCropArea(event: MouseEvent | KeyboardEvent) {
 
 function startUpdate(event: MouseEvent) {
   const el = event.currentTarget.closest('image-crop')
+  if (!(el instanceof ImageCropElement)) return
+
   if (event.target.hasAttribute('data-direction')) {
     const direction = event.target.getAttribute('data-direction')
     // Change crop area
@@ -125,6 +131,8 @@ function setInitialPosition(el) {
 
 function stopUpdate(event: MouseEvent) {
   const el = event.currentTarget
+  if (!(el instanceof ImageCropElement)) return
+
   el.dragStartX = el.dragStartY = null
   el.classList.remove('nwse', 'nesw')
   el.removeEventListener('mousemove', updateCropArea)
