@@ -51,7 +51,10 @@ function moveCropArea(event: MouseEvent | KeyboardEvent) {
 }
 
 function updateCropArea(event: MouseEvent | KeyboardEvent) {
-  const el = event.target.closest('image-crop')
+  const target = event.target
+  if (!(target instanceof HTMLElement)) return
+
+  const el = target.closest('image-crop')
   if (!(el instanceof ImageCropElement)) return
 
   const rect = el.getBoundingClientRect()
@@ -74,11 +77,17 @@ function updateCropArea(event: MouseEvent | KeyboardEvent) {
 }
 
 function startUpdate(event: MouseEvent) {
-  const el = event.currentTarget.closest('image-crop')
+  const currentTarget = event.currentTarget
+  if (!(currentTarget instanceof HTMLElement)) return
+
+  const el = currentTarget.closest('image-crop')
   if (!(el instanceof ImageCropElement)) return
 
-  if (event.target.hasAttribute('data-direction')) {
-    const direction = event.target.getAttribute('data-direction')
+  const target = event.target
+  if (!(target instanceof HTMLElement)) return
+
+  if (target.hasAttribute('data-direction')) {
+    const direction = target.getAttribute('data-direction')
     // Change crop area
     el.addEventListener('mousemove', updateCropArea)
     if (['nw', 'se'].indexOf(direction) >= 0) el.classList.add('nwse')
@@ -116,7 +125,12 @@ function updateDimensions(target, deltaX, deltaY, reposition = true) {
 }
 
 function imageReady(event: Event) {
-  const el = event.currentTarget.closest('image-crop')
+  const currentTarget = event.currentTarget
+  if (!(currentTarget instanceof HTMLElement)) return
+
+  const el = currentTarget.closest('image-crop')
+  if (!(el instanceof ImageCropElement)) return
+
   el.loaded = true
   setInitialPosition(el)
 }
