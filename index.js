@@ -174,11 +174,11 @@ export class ImageCropElement extends HTMLElement {
   minWidth: number
   dragStartX: ?number
   dragStartY: ?number
+  startX: number
+  startY: number
 
   constructor() {
     super()
-    this.startX = null
-    this.startY = null
     this.minWidth = 10
   }
 
