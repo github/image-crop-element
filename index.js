@@ -1,3 +1,5 @@
+/* @flow strict */
+
 const tmpl = document.createElement('template')
 tmpl.innerHTML = `
   <div class="crop-wrapper">

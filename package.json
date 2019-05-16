@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "lint": "eslint index.js",
+    "lint": "github-lint",
     "prebuild": "npm run clean && npm run lint && mkdir dist",
     "build-umd": "BABEL_ENV=umd babel index.js -o dist/index.umd.js",
     "build-esm": "BABEL_ENV=esm babel index.js -o dist/index.esm.js",
@@ -34,6 +34,7 @@
     "chai": "^4.2.0",
     "eslint": "^5.14.1",
     "eslint-plugin-github": "^1.10.0",
+    "flow-bin": "^0.98.1",
     "karma": "^4.0.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
