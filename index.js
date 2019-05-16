@@ -16,7 +16,7 @@ tmpl.innerHTML = `
   </div>
 `
 
-function moveCropArea(event) {
+function moveCropArea(event: MouseEvent | KeyboardEvent) {
   const el = event.currentTarget
   let deltaX = 0
   let deltaY = 0
@@ -48,7 +48,7 @@ function moveCropArea(event) {
   el.dragStartY = event.pageY
 }
 
-function updateCropArea(event) {
+function updateCropArea(event: MouseEvent | KeyboardEvent) {
   const el = event.target.closest('image-crop')
   const rect = el.getBoundingClientRect()
   let deltaX, deltaY, delta
@@ -69,7 +69,7 @@ function updateCropArea(event) {
   if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !event.key)
 }
 
-function startUpdate(event) {
+function startUpdate(event: MouseEvent) {
   const el = event.currentTarget.closest('image-crop')
   if (event.target.hasAttribute('data-direction')) {
     const direction = event.target.getAttribute('data-direction')
@@ -109,7 +109,7 @@ function updateDimensions(target, deltaX, deltaY, reposition = true) {
   fireChangeEvent(target, {x, y, width: newSide, height: newSide})
 }
 
-function imageReady(event) {
+function imageReady(event: Event) {
   const el = event.currentTarget.closest('image-crop')
   el.loaded = true
   setInitialPosition(el)
@@ -123,7 +123,7 @@ function setInitialPosition(el) {
   updateDimensions(el, side, side)
 }
 
-function stopUpdate(event) {
+function stopUpdate(event: MouseEvent) {
   const el = event.currentTarget
   el.dragStartX = el.dragStartY = null
   el.classList.remove('nwse', 'nesw')
