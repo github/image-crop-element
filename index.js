@@ -139,13 +139,13 @@ function stopUpdate(event: MouseEvent) {
   el.removeEventListener('mousemove', moveCropArea)
 }
 
-function fireChangeEvent(target, result) {
+function fireChangeEvent(target: ImageCropElement, result: {x: number, y: number, width: number, height: number}) {
   const ratio = target.image.naturalWidth / target.image.width
   for (const key in result) {
     const value = Math.round(result[key] * ratio)
     result[key] = value
     const slottedInput = target.querySelector(`[data-image-crop-input='${key}']`)
-    if (slottedInput) slottedInput.value = value
+    if (slottedInput instanceof HTMLInputElement) slottedInput.value = value.toString()
   }
 
   target.dispatchEvent(new CustomEvent('image-crop-change', {bubbles: true, detail: result}))
