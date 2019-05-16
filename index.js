@@ -32,7 +32,7 @@ function moveCropArea(event: MouseEvent | KeyboardEvent) {
     } else if (event.key === 'ArrowRight') {
       deltaX = 1
     }
-  } else if (el.dragStartX && el.dragStartY) {
+  } else if (el.dragStartX && el.dragStartY && event instanceof MouseEvent) {
     deltaX = event.pageX - el.dragStartX
     deltaY = event.pageY - el.dragStartY
   }
@@ -46,8 +46,10 @@ function moveCropArea(event: MouseEvent | KeyboardEvent) {
     fireChangeEvent(el, {x, y, width: el.box.offsetWidth, height: el.box.offsetHeight})
   }
 
-  el.dragStartX = event.pageX
-  el.dragStartY = event.pageY
+  if (event instanceof MouseEvent) {
+    el.dragStartX = event.pageX
+    el.dragStartY = event.pageY
+  }
 }
 
 function updateCropArea(event: MouseEvent | KeyboardEvent) {
