@@ -144,6 +144,9 @@ function fireChangeEvent(target, result) {
 }
 
 export class ImageCropElement extends HTMLElement {
+  image: HTMLImageElement
+  box: HTMLElement
+
   constructor() {
     super()
     this.startX = null
@@ -156,8 +159,13 @@ export class ImageCropElement extends HTMLElement {
     this.constructed = true
 
     this.appendChild(document.importNode(tmpl.content, true))
-    this.image = this.querySelector('img')
-    this.box = this.querySelector('[data-crop-box]')
+    const image = this.querySelector('img')
+    if (!(image instanceof HTMLImageElement)) return
+    this.image = image
+
+    const box = this.querySelector('[data-crop-box]')
+    if (!(box instanceof HTMLElement)) return
+    this.box = box
 
     this.image.addEventListener('load', imageReady)
     this.addEventListener('mouseleave', stopUpdate)
