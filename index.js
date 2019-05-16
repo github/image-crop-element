@@ -185,11 +185,11 @@ export class ImageCropElement extends HTMLElement {
     return ['src']
   }
 
-  get src() {
+  get src(): ?string {
     return this.getAttribute('src')
   }
 
-  set src(val) {
+  set src(val: ?string) {
     if (val) {
       this.setAttribute('src', val)
     } else {
@@ -197,11 +197,11 @@ export class ImageCropElement extends HTMLElement {
     }
   }
 
-  get loaded() {
+  get loaded(): boolean {
     return this.hasAttribute('loaded')
   }
 
-  set loaded(val) {
+  set loaded(val: boolean) {
     if (val) {
       this.setAttribute('loaded', '')
     } else {
@@ -209,7 +209,7 @@ export class ImageCropElement extends HTMLElement {
     }
   }
 
-  attributeChangedCallback(attribute, oldValue, newValue) {
+  attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
     if (attribute === 'src') {
       this.loaded = false
       if (this.image) this.image.src = newValue
