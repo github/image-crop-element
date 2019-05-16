@@ -146,6 +146,8 @@ function fireChangeEvent(target, result) {
 export class ImageCropElement extends HTMLElement {
   image: HTMLImageElement
   box: HTMLElement
+  constructed: boolean
+  minWidth: number
 
   constructor() {
     super()
