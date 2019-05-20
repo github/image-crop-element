@@ -75,7 +75,7 @@ function updateCropArea(event: MouseEvent | KeyboardEvent) {
     deltaY = event.pageY - el.startY - rect.top - window.pageYOffset
   }
 
-  if (deltaX && deltaY && event instanceof KeyboardEvent) updateDimensions(el, deltaX, deltaY, !event.key)
+  if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !(event instanceof KeyboardEvent))
 }
 
 function startUpdate(event: MouseEvent) {
