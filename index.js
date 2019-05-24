@@ -167,7 +167,7 @@ function fireChangeEvent(target: ImageCropElement, result: {x: number, y: number
   target.dispatchEvent(new CustomEvent('image-crop-change', {bubbles: true, detail: result}))
 }
 
-export class ImageCropElement extends HTMLElement {
+class ImageCropElement extends HTMLElement {
   image: HTMLImageElement
   box: HTMLElement
   dragStartX: ?number
