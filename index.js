@@ -1,3 +1,5 @@
+/* @flow strict */
+
 const tmpl = document.createElement('template')
 tmpl.innerHTML = `
   <div class="crop-wrapper">
@@ -14,8 +16,10 @@ tmpl.innerHTML = `
   </div>
 `
 
-function moveCropArea(event) {
+function moveCropArea(event: MouseEvent | KeyboardEvent) {
   const el = event.currentTarget
+  if (!(el instanceof ImageCropElement)) return
+
   let deltaX = 0
   let deltaY = 0
   if (event.type === 'keydown') {
@@ -28,7 +32,7 @@ function moveCropArea(event) {
     } else if (event.key === 'ArrowRight') {
       deltaX = 1
     }
-  } else if (el.dragStartX && el.dragStartY) {
+  } else if (el.dragStartX && el.dragStartY && event instanceof MouseEvent) {
     deltaX = event.pageX - el.dragStartX
     deltaY = event.pageY - el.dragStartY
   }
@@ -42,12 +46,19 @@ function moveCropArea(event) {
     fireChangeEvent(el, {x, y, width: el.box.offsetWidth, height: el.box.offsetHeight})
   }
 
-  el.dragStartX = event.pageX
-  el.dragStartY = event.pageY
+  if (event instanceof MouseEvent) {
+    el.dragStartX = event.pageX
+    el.dragStartY = event.pageY
+  }
 }
 
-function updateCropArea(event) {
-  const el = event.target.closest('image-crop')
+function updateCropArea(event: MouseEvent | KeyboardEvent) {
+  const target = event.target
+  if (!(target instanceof HTMLElement)) return
+
+  const el = target.closest('image-crop')
+  if (!(el instanceof ImageCropElement)) return
+
   const rect = el.getBoundingClientRect()
   let deltaX, deltaY, delta
   if (event.key) {
@@ -59,18 +70,26 @@ function updateCropArea(event) {
     deltaY = el.box.offsetHeight + delta
     el.startX = el.box.offsetLeft
     el.startY = el.box.offsetTop
-  } else {
+  } else if (event instanceof MouseEvent) {
     deltaX = event.pageX - el.startX - rect.left - window.pageXOffset
     deltaY = event.pageY - el.startY - rect.top - window.pageYOffset
   }
 
-  if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !event.key)
+  if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !(event instanceof KeyboardEvent))
 }
 
-function startUpdate(event) {
-  const el = event.currentTarget.closest('image-crop')
-  if (event.target.hasAttribute('data-direction')) {
-    const direction = event.target.getAttribute('data-direction')
+function startUpdate(event: MouseEvent) {
+  const currentTarget = event.currentTarget
+  if (!(currentTarget instanceof HTMLElement)) return
+
+  const el = currentTarget.closest('image-crop')
+  if (!(el instanceof ImageCropElement)) return
+
+  const target = event.target
+  if (!(target instanceof HTMLElement)) return
+
+  if (target.hasAttribute('data-direction')) {
+    const direction = target.getAttribute('data-direction')
     // Change crop area
     el.addEventListener('mousemove', updateCropArea)
     if (['nw', 'se'].indexOf(direction) >= 0) el.classList.add('nwse')
@@ -107,8 +126,13 @@ function updateDimensions(target, deltaX, deltaY, reposition = true) {
   fireChangeEvent(target, {x, y, width: newSide, height: newSide})
 }
 
-function imageReady(event) {
-  const el = event.currentTarget.closest('image-crop')
+function imageReady(event: Event) {
+  const currentTarget = event.currentTarget
+  if (!(currentTarget instanceof HTMLElement)) return
+
+  const el = currentTarget.closest('image-crop')
+  if (!(el instanceof ImageCropElement)) return
+
   el.loaded = true
   setInitialPosition(el)
 }
@@ -121,31 +145,40 @@ function setInitialPosition(el) {
   updateDimensions(el, side, side)
 }
 
-function stopUpdate(event) {
+function stopUpdate(event: MouseEvent) {
   const el = event.currentTarget
+  if (!(el instanceof ImageCropElement)) return
+
   el.dragStartX = el.dragStartY = null
   el.classList.remove('nwse', 'nesw')
   el.removeEventListener('mousemove', updateCropArea)
   el.removeEventListener('mousemove', moveCropArea)
 }
 
-function fireChangeEvent(target, result) {
+function fireChangeEvent(target: ImageCropElement, result: {x: number, y: number, width: number, height: number}) {
   const ratio = target.image.naturalWidth / target.image.width
   for (const key in result) {
     const value = Math.round(result[key] * ratio)
     result[key] = value
     const slottedInput = target.querySelector(`[data-image-crop-input='${key}']`)
-    if (slottedInput) slottedInput.value = value
+    if (slottedInput instanceof HTMLInputElement) slottedInput.value = value.toString()
   }
 
   target.dispatchEvent(new CustomEvent('image-crop-change', {bubbles: true, detail: result}))
 }
 
 export class ImageCropElement extends HTMLElement {
+  image: HTMLImageElement
+  box: HTMLElement
+  constructed: boolean
+  minWidth: number
+  dragStartX: ?number
+  dragStartY: ?number
+  startX: number
+  startY: number
+
   constructor() {
     super()
-    this.startX = null
-    this.startY = null
     this.minWidth = 10
   }
 
@@ -154,8 +187,13 @@ export class ImageCropElement extends HTMLElement {
     this.constructed = true
 
     this.appendChild(document.importNode(tmpl.content, true))
-    this.image = this.querySelector('img')
-    this.box = this.querySelector('[data-crop-box]')
+    const image = this.querySelector('img')
+    if (!(image instanceof HTMLImageElement)) return
+    this.image = image
+
+    const box = this.querySelector('[data-crop-box]')
+    if (!(box instanceof HTMLElement)) return
+    this.box = box
 
     this.image.addEventListener('load', imageReady)
     this.addEventListener('mouseleave', stopUpdate)
@@ -171,11 +209,11 @@ export class ImageCropElement extends HTMLElement {
     return ['src']
   }
 
-  get src() {
+  get src(): ?string {
     return this.getAttribute('src')
   }
 
-  set src(val) {
+  set src(val: ?string) {
     if (val) {
       this.setAttribute('src', val)
     } else {
@@ -183,11 +221,11 @@ export class ImageCropElement extends HTMLElement {
     }
   }
 
-  get loaded() {
+  get loaded(): boolean {
     return this.hasAttribute('loaded')
   }
 
-  set loaded(val) {
+  set loaded(val: boolean) {
     if (val) {
       this.setAttribute('loaded', '')
     } else {
@@ -195,7 +233,7 @@ export class ImageCropElement extends HTMLElement {
     }
   }
 
-  attributeChangedCallback(attribute, oldValue, newValue) {
+  attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
     if (attribute === 'src') {
       this.loaded = false
       if (this.image) this.image.src = newValue

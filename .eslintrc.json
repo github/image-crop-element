@@ -1,11 +1,15 @@
 {
   "extends": [
     "plugin:github/es6",
-    "plugin:github/browser"
+    "plugin:github/browser",
+    "plugin:github/flow"
   ],
   "overrides": [
     {
       "files": "test/**/*.js",
+      "rules": {
+        "flowtype/require-valid-file-annotation": "off"
+      },
       "env": {
         "mocha": true
       },
