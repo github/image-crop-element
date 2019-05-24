@@ -104,7 +104,7 @@ function startUpdate(event: MouseEvent) {
 }
 
 function updateDimensions(target, deltaX, deltaY, reposition = true) {
-  let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), target.minWidth)
+  let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), 10)
   newSide = Math.min(
     newSide,
     deltaY > 0 ? target.image.height - target.startY : target.startY,
@@ -171,16 +171,10 @@ export class ImageCropElement extends HTMLElement {
   image: HTMLImageElement
   box: HTMLElement
   constructed: boolean
-  minWidth: number
   dragStartX: ?number
   dragStartY: ?number
   startX: number
   startY: number
-
-  constructor() {
-    super()
-    this.minWidth = 10
-  }
 
   connectedCallback() {
     if (this.constructed) return
