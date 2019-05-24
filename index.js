@@ -170,17 +170,14 @@ function fireChangeEvent(target: ImageCropElement, result: {x: number, y: number
 export class ImageCropElement extends HTMLElement {
   image: HTMLImageElement
   box: HTMLElement
-  constructed: boolean
   dragStartX: ?number
   dragStartY: ?number
   startX: number
   startY: number
 
   connectedCallback() {
-    if (this.constructed) return
-    this.constructed = true
-
     this.appendChild(document.importNode(tmpl.content, true))
+
     const image = this.querySelector('img')
     if (!(image instanceof HTMLImageElement)) return
     this.image = image
