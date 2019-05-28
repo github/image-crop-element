@@ -6,8 +6,6 @@ declare module '@github/image-crop-element' {
     box: HTMLElement;
     dragStartX: ?number;
     dragStartY: ?number;
-    startX: number;
-    startY: number;
   
     get src(): ?string;
     set src(val: ?string): void;

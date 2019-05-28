@@ -16,6 +16,8 @@ tmpl.innerHTML = `
   </div>
 `
 
+const startPositions = new WeakMap()
+
 function moveCropArea(event: MouseEvent | KeyboardEvent) {
   const el = event.currentTarget
   if (!(el instanceof ImageCropElement)) return
@@ -68,11 +70,12 @@ function updateCropArea(event: MouseEvent | KeyboardEvent) {
     if (!delta) return
     deltaX = el.box.offsetWidth + delta
     deltaY = el.box.offsetHeight + delta
-    el.startX = el.box.offsetLeft
-    el.startY = el.box.offsetTop
+    startPositions.set(el, {startX: el.box.offsetLeft, startY: el.box.offsetTop})
   } else if (event instanceof MouseEvent) {
-    deltaX = event.pageX - el.startX - rect.left - window.pageXOffset
-    deltaY = event.pageY - el.startY - rect.top - window.pageYOffset
+    const pos = startPositions.get(el)
+    if (!pos) return
+    deltaX = event.pageX - pos.startX - rect.left - window.pageXOffset
+    deltaY = event.pageY - pos.startY - rect.top - window.pageYOffset
   }
 
   if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !(event instanceof KeyboardEvent))
@@ -94,8 +97,10 @@ function startUpdate(event: MouseEvent) {
     el.addEventListener('mousemove', updateCropArea)
     if (['nw', 'se'].indexOf(direction) >= 0) el.classList.add('nwse')
     if (['ne', 'sw'].indexOf(direction) >= 0) el.classList.add('nesw')
-    el.startX = el.box.offsetLeft + (['se', 'ne'].indexOf(direction) >= 0 ? 0 : el.box.offsetWidth)
-    el.startY = el.box.offsetTop + (['se', 'sw'].indexOf(direction) >= 0 ? 0 : el.box.offsetHeight)
+    startPositions.set(el, {
+      startX: el.box.offsetLeft + (['se', 'ne'].indexOf(direction) >= 0 ? 0 : el.box.offsetWidth),
+      startY: el.box.offsetTop + (['se', 'sw'].indexOf(direction) >= 0 ? 0 : el.box.offsetHeight)
+    })
     updateCropArea(event)
   } else {
     // Move crop area
@@ -105,18 +110,16 @@ function startUpdate(event: MouseEvent) {
 
 function updateDimensions(target, deltaX, deltaY, reposition = true) {
   let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), 10)
+  const pos = startPositions.get(target)
+  if (!pos) return
   newSide = Math.min(
     newSide,
-    deltaY > 0 ? target.image.height - target.startY : target.startY,
-    deltaX > 0 ? target.image.width - target.startX : target.startX
+    deltaY > 0 ? target.image.height - pos.startY : pos.startY,
+    deltaX > 0 ? target.image.width - pos.startX : pos.startX
   )
 
-  const x = reposition
-    ? Math.round(Math.max(0, deltaX > 0 ? target.startX : target.startX - newSide))
-    : target.box.offsetLeft
-  const y = reposition
-    ? Math.round(Math.max(0, deltaY > 0 ? target.startY : target.startY - newSide))
-    : target.box.offsetTop
+  const x = reposition ? Math.round(Math.max(0, deltaX > 0 ? pos.startX : pos.startX - newSide)) : target.box.offsetLeft
+  const y = reposition ? Math.round(Math.max(0, deltaY > 0 ? pos.startY : pos.startY - newSide)) : target.box.offsetTop
 
   target.box.style.left = `${x}px`
   target.box.style.top = `${y}px`
@@ -140,8 +143,10 @@ function imageReady(event: Event) {
 function setInitialPosition(el) {
   const image = el.image
   const side = Math.round(image.clientWidth > image.clientHeight ? image.clientHeight : image.clientWidth)
-  el.startX = (image.clientWidth - side) / 2
-  el.startY = (image.clientHeight - side) / 2
+  startPositions.set(el, {
+    startX: (image.clientWidth - side) / 2,
+    startY: (image.clientHeight - side) / 2
+  })
   updateDimensions(el, side, side)
 }
 
@@ -172,8 +177,6 @@ class ImageCropElement extends HTMLElement {
   box: HTMLElement
   dragStartX: ?number
   dragStartY: ?number
-  startX: number
-  startY: number
 
   connectedCallback() {
     this.appendChild(document.importNode(tmpl.content, true))
