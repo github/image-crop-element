@@ -17,6 +17,7 @@ tmpl.innerHTML = `
 `
 
 const startPositions = new WeakMap()
+const dragStartPositions = new WeakMap()
 
 function moveCropArea(event: MouseEvent | KeyboardEvent) {
   const el = event.currentTarget
@@ -34,9 +35,11 @@ function moveCropArea(event: MouseEvent | KeyboardEvent) {
     } else if (event.key === 'ArrowRight') {
       deltaX = 1
     }
-  } else if (el.dragStartX && el.dragStartY && event instanceof MouseEvent) {
-    deltaX = event.pageX - el.dragStartX
-    deltaY = event.pageY - el.dragStartY
+  } else if (dragStartPositions.has(el) && event instanceof MouseEvent) {
+    const pos = dragStartPositions.get(el)
+    if (!pos) return
+    deltaX = event.pageX - pos.dragStartX
+    deltaY = event.pageY - pos.dragStartY
   }
 
   if (deltaX !== 0 || deltaY !== 0) {
@@ -49,8 +52,10 @@ function moveCropArea(event: MouseEvent | KeyboardEvent) {
   }
 
   if (event instanceof MouseEvent) {
-    el.dragStartX = event.pageX
-    el.dragStartY = event.pageY
+    dragStartPositions.set(el, {
+      dragStartX: event.pageX,
+      dragStartY: event.pageY
+    })
   }
 }
 
@@ -154,7 +159,7 @@ function stopUpdate(event: MouseEvent) {
   const el = event.currentTarget
   if (!(el instanceof ImageCropElement)) return
 
-  el.dragStartX = el.dragStartY = null
+  dragStartPositions.delete(el)
   el.classList.remove('nwse', 'nesw')
   el.removeEventListener('mousemove', updateCropArea)
   el.removeEventListener('mousemove', moveCropArea)
@@ -175,8 +180,6 @@ function fireChangeEvent(target: ImageCropElement, result: {x: number, y: number
 class ImageCropElement extends HTMLElement {
   image: HTMLImageElement
   box: HTMLElement
-  dragStartX: ?number
-  dragStartY: ?number
 
   connectedCallback() {
     this.appendChild(document.importNode(tmpl.content, true))
