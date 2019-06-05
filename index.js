@@ -18,6 +18,7 @@ tmpl.innerHTML = `
 
 const startPositions = new WeakMap()
 const dragStartPositions = new WeakMap()
+const constructedElements = new WeakMap()
 
 function moveCropArea(event: MouseEvent | KeyboardEvent) {
   const el = event.currentTarget
@@ -182,6 +183,9 @@ class ImageCropElement extends HTMLElement {
   box: HTMLElement
 
   connectedCallback() {
+    if (constructedElements.has(this)) return
+    constructedElements.set(this, true)
+
     this.appendChild(document.importNode(tmpl.content, true))
 
     const image = this.querySelector('img')
