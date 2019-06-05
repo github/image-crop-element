@@ -2,9 +2,6 @@
 
 declare module '@github/image-crop-element' {
   declare export default class ImageCropElement extends HTMLElement {
-    image: HTMLImageElement;
-    box: HTMLElement;
-  
     get src(): ?string;
     set src(val: ?string): void;
     get loaded(): boolean;
