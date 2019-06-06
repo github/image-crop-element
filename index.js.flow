@@ -1,0 +1,10 @@
+/* @flow strict */
+
+declare module '@github/image-crop-element' {
+  declare export default class ImageCropElement extends HTMLElement {
+    get src(): ?string;
+    set src(val: ?string): void;
+    get loaded(): boolean;
+    set loaded(val: boolean): void;
+  }
+}
