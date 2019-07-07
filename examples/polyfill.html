@@ -13,7 +13,7 @@
     }
   </style>
   <meta charset="utf-8">
-  <link href="./index.css" rel="stylesheet">
+  <link href="../index.css" rel="stylesheet">
   <!-- Uncomment for testing: Polyfill for IE11 (Reflect.construct) -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-shim.min.js"></script>
   <script type="text/javascript" src="https://unpkg.com/@webcomponents/webcomponents-platform@1.0.0/webcomponents-platform.js"></script>
@@ -21,11 +21,11 @@
   <!-- Uncomment for testing: Polyfill for Firefox, Edge, and IE11 -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.20/webcomponents-hi-ce.js"></script>
   <!-- Uncomment for testing: Build file -->
-  <script type="text/javascript" src="../dist/index-umd.js"></script>
+  <script type="module" src="https://unpkg.com/@github/image-crop-element/dist/index.esm.js"></script>
   <title>image-crop-element demo</title>
 </head>
 <body>
-  <image-crop src="ams.jpg" class="wrapper">
+  <image-crop src="../ams.jpg" class="wrapper">
     <div class="loading" data-loading-slot>loading</div>
     <input type="text" data-image-crop-input="x" name="x" size="4" aria-label="x">
     <input type="text" data-image-crop-input="y" name="y" size="4" aria-label="y">
