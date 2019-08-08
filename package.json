@@ -1,6 +1,6 @@
 {
   "name": "@github/image-crop-element",
-  "version": "3.0.1",
+  "version": "3.0.3",
   "description": "Select area for cropping an image. This does not actually crop.",
   "main": "dist/index.umd.js",
   "module": "dist/index.esm.js",
@@ -19,7 +19,8 @@
     "build": "npm run build-umd && npm run build-esm && cp index.js.flow dist/index.umd.js.flow && cp index.js.flow dist/index.esm.js.flow",
     "pretest": "npm run build",
     "prepublishOnly": "npm run build",
-    "test": "karma start test/karma.config.js"
+    "test": "karma start test/karma.config.js",
+    "postpublish": "npm publish --ignore-scripts --@github:registry='https://npm.pkg.github.com'"
   },
   "keywords": [
     "crop",
