@@ -1,4 +1,4 @@
 export default class ImageCropElement extends HTMLElement {
-  src?: string
+  src: string || null
   loaded?: boolean
 }
