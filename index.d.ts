@@ -4,7 +4,7 @@ export default class ImageCropElement extends HTMLElement {
 }
 
 declare global {
-  interface Window {
-    ImageCropElement: typeof ImageCropElement
+  interface HTMLElementTagNameMap {
+    'image-crop': ImageCropElement
   }
 }
