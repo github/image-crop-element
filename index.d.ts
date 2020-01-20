@@ -7,4 +7,7 @@ declare global {
   interface Window {
     ImageCropElement: typeof ImageCropElement
   }
+  interface HTMLElementTagNameMap {
+    'image-crop': ImageCropElement
+  }
 }
