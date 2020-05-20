@@ -1,5 +1,3 @@
-/* @flow strict */
-
 const tmpl = document.createElement('template')
 tmpl.innerHTML = `
   <div class="crop-wrapper">
@@ -16,18 +14,19 @@ tmpl.innerHTML = `
   </div>
 `
 
-const startPositions: WeakMap<ImageCropElement, {startX: number, startY: number}> = new WeakMap()
-const dragStartPositions: WeakMap<ImageCropElement, {dragStartX: number, dragStartY: number}> = new WeakMap()
-const constructedElements: WeakMap<ImageCropElement, {image: HTMLImageElement, box: HTMLElement}> = new WeakMap()
+const startPositions: WeakMap<ImageCropElement, {startX: number; startY: number}> = new WeakMap()
+const dragStartPositions: WeakMap<ImageCropElement, {dragStartX: number; dragStartY: number}> = new WeakMap()
+const constructedElements: WeakMap<ImageCropElement, {image: HTMLImageElement; box: HTMLElement}> = new WeakMap()
 
 function moveCropArea(event: MouseEvent | KeyboardEvent) {
   const el = event.currentTarget
   if (!(el instanceof ImageCropElement)) return
   const {box, image} = constructedElements.get(el) || {}
+  if (!box || !image) return
 
   let deltaX = 0
   let deltaY = 0
-  if (event.type === 'keydown') {
+  if (event instanceof KeyboardEvent) {
     if (event.key === 'ArrowUp') {
       deltaY = -1
     } else if (event.key === 'ArrowDown') {
@@ -68,10 +67,11 @@ function updateCropArea(event: MouseEvent | KeyboardEvent) {
   const el = target.closest('image-crop')
   if (!(el instanceof ImageCropElement)) return
   const {box} = constructedElements.get(el) || {}
+  if (!box) return
 
   const rect = el.getBoundingClientRect()
   let deltaX, deltaY, delta
-  if (event.key) {
+  if (event instanceof KeyboardEvent) {
     if (event.key === 'Escape') return setInitialPosition(el)
     if (event.key === '-') delta = -10
     if (event.key === '=') delta = +10
@@ -96,12 +96,13 @@ function startUpdate(event: MouseEvent) {
   const el = currentTarget.closest('image-crop')
   if (!(el instanceof ImageCropElement)) return
   const {box} = constructedElements.get(el) || {}
+  if (!box) return
 
   const target = event.target
   if (!(target instanceof HTMLElement)) return
 
   if (target.hasAttribute('data-direction')) {
-    const direction = target.getAttribute('data-direction')
+    const direction = target.getAttribute('data-direction') || ''
     // Change crop area
     el.addEventListener('mousemove', updateCropArea)
     if (['nw', 'se'].indexOf(direction) >= 0) el.classList.add('nwse')
@@ -117,11 +118,13 @@ function startUpdate(event: MouseEvent) {
   }
 }
 
-function updateDimensions(target, deltaX, deltaY, reposition = true) {
+function updateDimensions(target: ImageCropElement, deltaX: number, deltaY: number, reposition = true) {
   let newSide = Math.max(Math.abs(deltaX), Math.abs(deltaY), 10)
   const pos = startPositions.get(target)
   if (!pos) return
   const {box, image} = constructedElements.get(target) || {}
+  if (!box || !image) return
+
   newSide = Math.min(
     newSide,
     deltaY > 0 ? image.height - pos.startY : pos.startY,
@@ -150,8 +153,9 @@ function imageReady(event: Event) {
   setInitialPosition(el)
 }
 
-function setInitialPosition(el) {
+function setInitialPosition(el: ImageCropElement) {
   const {image} = constructedElements.get(el) || {}
+  if (!image) return
   const side = Math.round(image.clientWidth > image.clientHeight ? image.clientHeight : image.clientWidth)
   startPositions.set(el, {
     startX: (image.clientWidth - side) / 2,
@@ -170,8 +174,17 @@ function stopUpdate(event: MouseEvent) {
   el.removeEventListener('mousemove', moveCropArea)
 }
 
-function fireChangeEvent(target: ImageCropElement, result: {x: number, y: number, width: number, height: number}) {
+interface Result {
+  x: number
+  y: number
+  width: number
+  height: number
+  [propName: string]: number
+}
+
+function fireChangeEvent(target: ImageCropElement, result: Result) {
   const {image} = constructedElements.get(target) || {}
+  if (!image) return
   const ratio = image.naturalWidth / image.width
   for (const key in result) {
     const value = Math.round(result[key] * ratio)
@@ -207,11 +220,11 @@ class ImageCropElement extends HTMLElement {
     return ['src']
   }
 
-  get src(): ?string {
+  get src(): string | null {
     return this.getAttribute('src')
   }
 
-  set src(val: ?string) {
+  set src(val: string | null) {
     if (val) {
       this.setAttribute('src', val)
     } else {
@@ -237,6 +250,12 @@ class ImageCropElement extends HTMLElement {
       this.loaded = false
       if (image) image.src = newValue
     }
+  }
+}
+
+declare global {
+  interface Window {
+    ImageCropElement: typeof ImageCropElement
   }
 }
 

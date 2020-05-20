@@ -1,19 +1,19 @@
-describe('image-crop', function() {
-  describe('element creation', function() {
-    it('creates from document.createElement', function() {
+describe('image-crop', function () {
+  describe('element creation', function () {
+    it('creates from document.createElement', function () {
       const el = document.createElement('image-crop')
       assert.equal('IMAGE-CROP', el.nodeName)
       assert(el instanceof window.ImageCropElement)
     })
 
-    it('creates from constructor', function() {
+    it('creates from constructor', function () {
       const el = new window.ImageCropElement()
       assert.equal('IMAGE-CROP', el.nodeName)
     })
   })
 
-  describe('after tree insertion', function() {
-    beforeEach(function() {
+  describe('after tree insertion', function () {
+    beforeEach(function () {
       document.body.innerHTML = `
         <image-crop src="http://github.com/github.png?size=123">
           <div data-loading-slot>loading</div>
@@ -25,13 +25,13 @@ describe('image-crop', function() {
       `
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('fires a change event and updates input', function(done) {
+    it('fires a change event and updates input', function (done) {
       const ce = document.querySelector('image-crop')
-      ce.addEventListener('image-crop-change', function() {
+      ce.addEventListener('image-crop-change', function () {
         assert(ce.hasAttribute('loaded'), 'has loaded attribute')
         assert.equal(document.querySelector('[name=x]').value, '0')
         assert.equal(document.querySelector('[name=y]').value, '0')

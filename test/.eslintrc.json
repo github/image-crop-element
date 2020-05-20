@@ -1,0 +1,9 @@
+{
+  "parser": "espree",
+  "env": {
+    "mocha": true
+  },
+  "globals": {
+    "assert": true
+  }
+}
