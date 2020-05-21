@@ -2,20 +2,9 @@
   "extends": [
     "plugin:github/es6",
     "plugin:github/browser",
-    "plugin:github/flow"
+    "plugin:github/typescript"
   ],
-  "overrides": [
-    {
-      "files": "test/**/*.js",
-      "rules": {
-        "flowtype/require-valid-file-annotation": "off"
-      },
-      "env": {
-        "mocha": true
-      },
-      "globals": {
-        "assert": true
-      }
-    }
-  ]
+  "globals": {
+    "ImageCropElement": "readable"
+  }
 }
