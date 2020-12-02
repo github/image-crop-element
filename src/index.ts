@@ -37,8 +37,7 @@ function moveCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
       deltaX = 1
     }
   } else if (dragStartPositions.has(el) && event instanceof MouseEvent) {
-    const pos = dragStartPositions.get(el)
-    if (!pos) return
+    const pos = dragStartPositions.get(el)!
     deltaX = event.pageX - pos.dragStartX
     deltaY = event.pageY - pos.dragStartY
   }
