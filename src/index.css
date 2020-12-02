@@ -1,4 +1,7 @@
-image-crop { display: block; }
+image-crop {
+  touch-action: none;
+  display: block;
+}
 image-crop.nesw { cursor: nesw-resize; }
 image-crop.nwse { cursor: nwse-resize; }
 image-crop.nesw .crop-box,
