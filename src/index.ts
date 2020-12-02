@@ -18,7 +18,7 @@ const startPositions: WeakMap<ImageCropElement, {startX: number; startY: number}
 const dragStartPositions: WeakMap<ImageCropElement, {dragStartX: number; dragStartY: number}> = new WeakMap()
 const constructedElements: WeakMap<ImageCropElement, {image: HTMLImageElement; box: HTMLElement}> = new WeakMap()
 
-function moveCropArea(event: MouseEvent | KeyboardEvent) {
+function moveCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
   const el = event.currentTarget
   if (!(el instanceof ImageCropElement)) return
   const {box, image} = constructedElements.get(el) || {}
@@ -57,10 +57,17 @@ function moveCropArea(event: MouseEvent | KeyboardEvent) {
       dragStartX: event.pageX,
       dragStartY: event.pageY
     })
+  } else if (event instanceof TouchEvent) {
+    // Only support a single touch at a time
+    const {pageX, pageY} = event.changedTouches[0]
+    dragStartPositions.set(el, {
+      dragStartX: pageX,
+      dragStartY: pageY
+    })
   }
 }
 
-function updateCropArea(event: MouseEvent | KeyboardEvent) {
+function updateCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
   const target = event.target
   if (!(target instanceof HTMLElement)) return
 
@@ -89,7 +96,7 @@ function updateCropArea(event: MouseEvent | KeyboardEvent) {
   if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !(event instanceof KeyboardEvent))
 }
 
-function startUpdate(event: MouseEvent) {
+function startUpdate(event: TouchEvent | MouseEvent) {
   const currentTarget = event.currentTarget
   if (!(currentTarget instanceof HTMLElement)) return
 
@@ -164,7 +171,7 @@ function setInitialPosition(el: ImageCropElement) {
   updateDimensions(el, side, side)
 }
 
-function stopUpdate(event: MouseEvent) {
+function stopUpdate(event: TouchEvent | MouseEvent) {
   const el = event.currentTarget
   if (!(el instanceof ImageCropElement)) return
 
