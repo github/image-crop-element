@@ -18,7 +18,7 @@ const startPositions: WeakMap<ImageCropElement, {startX: number; startY: number}
 const dragStartPositions: WeakMap<ImageCropElement, {dragStartX: number; dragStartY: number}> = new WeakMap()
 const constructedElements: WeakMap<ImageCropElement, {image: HTMLImageElement; box: HTMLElement}> = new WeakMap()
 
-function moveCropArea(event: MouseEvent | KeyboardEvent) {
+function moveCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
   const el = event.currentTarget
   if (!(el instanceof ImageCropElement)) return
   const {box, image} = constructedElements.get(el) || {}
@@ -37,10 +37,16 @@ function moveCropArea(event: MouseEvent | KeyboardEvent) {
       deltaX = 1
     }
   } else if (dragStartPositions.has(el) && event instanceof MouseEvent) {
-    const pos = dragStartPositions.get(el)
-    if (!pos) return
+    const pos = dragStartPositions.get(el)!
     deltaX = event.pageX - pos.dragStartX
     deltaY = event.pageY - pos.dragStartY
+  } else if (dragStartPositions.has(el) && event instanceof TouchEvent) {
+    // Only support a single touch at a time
+    const {pageX, pageY} = event.changedTouches[0]
+
+    const {dragStartX, dragStartY} = dragStartPositions.get(el)!
+    deltaX = pageX - dragStartX
+    deltaY = pageY - dragStartY
   }
 
   if (deltaX !== 0 || deltaY !== 0) {
@@ -57,10 +63,17 @@ function moveCropArea(event: MouseEvent | KeyboardEvent) {
       dragStartX: event.pageX,
       dragStartY: event.pageY
     })
+  } else if (event instanceof TouchEvent) {
+    // Only support a single touch at a time
+    const {pageX, pageY} = event.changedTouches[0]
+    dragStartPositions.set(el, {
+      dragStartX: pageX,
+      dragStartY: pageY
+    })
   }
 }
 
-function updateCropArea(event: MouseEvent | KeyboardEvent) {
+function updateCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
   const target = event.target
   if (!(target instanceof HTMLElement)) return
 
@@ -84,12 +97,17 @@ function updateCropArea(event: MouseEvent | KeyboardEvent) {
     if (!pos) return
     deltaX = event.pageX - pos.startX - rect.left - window.pageXOffset
     deltaY = event.pageY - pos.startY - rect.top - window.pageYOffset
+  } else if (event instanceof TouchEvent) {
+    const pos = startPositions.get(el)
+    if (!pos) return
+    deltaX = event.changedTouches[0].pageX - pos.startX - rect.left - window.pageXOffset
+    deltaY = event.changedTouches[0].pageY - pos.startY - rect.top - window.pageYOffset
   }
 
   if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !(event instanceof KeyboardEvent))
 }
 
-function startUpdate(event: MouseEvent) {
+function startUpdate(event: TouchEvent | MouseEvent) {
   const currentTarget = event.currentTarget
   if (!(currentTarget instanceof HTMLElement)) return
 
@@ -105,6 +123,7 @@ function startUpdate(event: MouseEvent) {
     const direction = target.getAttribute('data-direction') || ''
     // Change crop area
     el.addEventListener('mousemove', updateCropArea)
+    el.addEventListener('touchmove', updateCropArea)
     if (['nw', 'se'].indexOf(direction) >= 0) el.classList.add('nwse')
     if (['ne', 'sw'].indexOf(direction) >= 0) el.classList.add('nesw')
     startPositions.set(el, {
@@ -115,6 +134,7 @@ function startUpdate(event: MouseEvent) {
   } else {
     // Move crop area
     el.addEventListener('mousemove', moveCropArea)
+    el.addEventListener('touchmove', moveCropArea)
   }
 }
 
@@ -164,7 +184,7 @@ function setInitialPosition(el: ImageCropElement) {
   updateDimensions(el, side, side)
 }
 
-function stopUpdate(event: MouseEvent) {
+function stopUpdate(event: TouchEvent | MouseEvent) {
   const el = event.currentTarget
   if (!(el instanceof ImageCropElement)) return
 
@@ -172,6 +192,8 @@ function stopUpdate(event: MouseEvent) {
   el.classList.remove('nwse', 'nesw')
   el.removeEventListener('mousemove', updateCropArea)
   el.removeEventListener('mousemove', moveCropArea)
+  el.removeEventListener('touchmove', updateCropArea)
+  el.removeEventListener('touchmove', moveCropArea)
 }
 
 interface Result {
@@ -208,8 +230,10 @@ class ImageCropElement extends HTMLElement {
 
     image.addEventListener('load', imageReady)
     this.addEventListener('mouseleave', stopUpdate)
+    this.addEventListener('touchend', stopUpdate)
     this.addEventListener('mouseup', stopUpdate)
     box.addEventListener('mousedown', startUpdate)
+    box.addEventListener('touchstart', startUpdate)
     this.addEventListener('keydown', moveCropArea)
     this.addEventListener('keydown', updateCropArea)
 
