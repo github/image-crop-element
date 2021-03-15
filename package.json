@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "lint": "github-lint",
+    "lint": "eslint src/*.ts",
     "prebuild": "npm run clean && npm run lint && mkdir dist",
     "build": "tsc && cp src/index.css dist/index.css",
     "pretest": "npm run build",
