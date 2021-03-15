@@ -41,7 +41,7 @@ image-crop .crop-outline {
   bottom: 0;
   left: 0;
   right: 0;
-  outline: 600px solid rgba(0, 0, 0, .3);
+  outline: 4000px solid rgba(0, 0, 0, .3);
 }
 image-crop .handle { position: absolute; }
 image-crop .handle:before {
