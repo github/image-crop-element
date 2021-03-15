@@ -25,6 +25,7 @@
     "custom element"
   ],
   "license": "MIT",
+  "prettier": "@github/prettier-config",
   "repository": "github/image-crop-element",
   "devDependencies": {
     "@github/prettier-config": "0.0.4",
