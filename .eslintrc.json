@@ -5,6 +5,6 @@
     "plugin:github/typescript"
   ],
   "globals": {
-    "ImageCropElement": "readable"
+    "ImageCropElement": "readonly"
   }
 }
