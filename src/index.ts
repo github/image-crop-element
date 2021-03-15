@@ -123,7 +123,7 @@ function startUpdate(event: TouchEvent | MouseEvent) {
     const direction = target.getAttribute('data-direction') || ''
     // Change crop area
     el.addEventListener('mousemove', updateCropArea)
-    el.addEventListener('touchmove', updateCropArea)
+    el.addEventListener('touchmove', updateCropArea, {passive: true})
     if (['nw', 'se'].indexOf(direction) >= 0) el.classList.add('nwse')
     if (['ne', 'sw'].indexOf(direction) >= 0) el.classList.add('nesw')
     startPositions.set(el, {
@@ -134,7 +134,7 @@ function startUpdate(event: TouchEvent | MouseEvent) {
   } else {
     // Move crop area
     el.addEventListener('mousemove', moveCropArea)
-    el.addEventListener('touchmove', moveCropArea)
+    el.addEventListener('touchmove', moveCropArea, {passive: true})
   }
 }
 
@@ -233,7 +233,7 @@ class ImageCropElement extends HTMLElement {
     this.addEventListener('touchend', stopUpdate)
     this.addEventListener('mouseup', stopUpdate)
     box.addEventListener('mousedown', startUpdate)
-    box.addEventListener('touchstart', startUpdate)
+    box.addEventListener('touchstart', startUpdate, {passive: true})
     this.addEventListener('keydown', moveCropArea)
     this.addEventListener('keydown', updateCropArea)
 
