@@ -274,7 +274,7 @@ class ImageCropElement extends HTMLElement {
 
     const box = shadowRoot.querySelector('[data-crop-box]')
     if (!(box instanceof HTMLElement)) return
-    const image = this.querySelector('img')
+    const image = shadowRoot.querySelector('img')
     if (!(image instanceof HTMLImageElement)) return
     constructedElements.set(this, {box, image})
 
