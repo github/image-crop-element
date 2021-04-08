@@ -269,6 +269,7 @@ class ImageCropElement extends HTMLElement {
   :host .se { bottom: 0; right: 0; cursor: nwse-resize; }
   :host .sw { bottom: 0; left: 0; cursor: nesw-resize; }
 </style>
+<slot></slot>
 <div class="crop-wrapper">
   <img width="100%" class="crop-image" alt="">
   <div class="crop-container">
@@ -281,7 +282,6 @@ class ImageCropElement extends HTMLElement {
     </div>
   </div>
 </div>
-<slot></slot>
 `
 
     const box = shadowRoot.querySelector('[data-crop-box]')
