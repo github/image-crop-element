@@ -1,19 +1,3 @@
-const tmpl = document.createElement('template')
-tmpl.innerHTML = `
-  <div class="crop-wrapper">
-    <img width="100%" class="crop-image" alt="">
-    <div class="crop-container">
-      <div data-crop-box class="crop-box">
-        <div class="crop-outline"></div>
-        <div data-direction="nw" class="handle nw"></div>
-        <div data-direction="ne" class="handle ne"></div>
-        <div data-direction="sw" class="handle sw"></div>
-        <div data-direction="se" class="handle se"></div>
-      </div>
-    </div>
-  </div>
-`
-
 const startPositions: WeakMap<ImageCropElement, {startX: number; startY: number}> = new WeakMap()
 const dragStartPositions: WeakMap<ImageCropElement, {dragStartX: number; dragStartY: number}> = new WeakMap()
 const constructedElements: WeakMap<ImageCropElement, {image: HTMLImageElement; box: HTMLElement}> = new WeakMap()
@@ -221,8 +205,85 @@ function fireChangeEvent(target: ImageCropElement, result: Result) {
 class ImageCropElement extends HTMLElement {
   connectedCallback() {
     if (constructedElements.has(this)) return
-    this.appendChild(document.importNode(tmpl.content, true))
-    const box = this.querySelector('[data-crop-box]')
+
+    const shadowRoot = this.attachShadow({mode: 'open'})
+    shadowRoot.innerHTML = `
+<style>
+  :host {
+    touch-action: none;
+    display: block;
+  }
+  :host.nesw { cursor: nesw-resize; }
+  :host.nwse { cursor: nwse-resize; }
+  :host.nesw .crop-box,
+  :host.nwse .crop-box {
+    cursor: inherit;
+  }
+  :host([loaded]) .crop-image { display: block; }
+  :host([loaded]) [data-loading-slot],
+  :host .crop-image {
+    display: none;
+  }
+  :host .crop-wrapper {
+    position: relative;
+    font-size: 0;
+  }
+  :host .crop-container {
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    position: absolute;
+    overflow: hidden;
+    z-index: 1;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+  :host .crop-box {
+    position: absolute;
+    border: 1px dashed #fff;
+    box-sizing: border-box;
+    cursor: move;
+  }
+  :host .crop-outline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    outline: 4000px solid rgba(0, 0, 0, .3);
+  }
+  :host .handle { position: absolute; }
+  :host .handle:before {
+    position: absolute;
+    display: block;
+    padding: 4px;
+    transform: translate(-50%, -50%);
+    content: ' ';
+    background: #fff;
+    border: 1px solid #767676;
+  }
+  :host .ne { top: 0; right: 0; cursor: nesw-resize; }
+  :host .nw { top: 0; left: 0; cursor: nwse-resize; }
+  :host .se { bottom: 0; right: 0; cursor: nwse-resize; }
+  :host .sw { bottom: 0; left: 0; cursor: nesw-resize; }
+</style>
+<div class="crop-wrapper">
+  <img width="100%" class="crop-image" alt="">
+  <div class="crop-container">
+    <div data-crop-box class="crop-box">
+      <div class="crop-outline"></div>
+      <div data-direction="nw" class="handle nw"></div>
+      <div data-direction="ne" class="handle ne"></div>
+      <div data-direction="sw" class="handle sw"></div>
+      <div data-direction="se" class="handle se"></div>
+    </div>
+  </div>
+</div>
+`
+
+    const box = shadowRoot.querySelector('[data-crop-box]')
     if (!(box instanceof HTMLElement)) return
     const image = this.querySelector('img')
     if (!(image instanceof HTMLImageElement)) return
