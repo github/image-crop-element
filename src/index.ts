@@ -146,17 +146,6 @@ function updateDimensions(target: ImageCropElement, deltaX: number, deltaY: numb
   fireChangeEvent(target, {x, y, width: newSide, height: newSide})
 }
 
-function imageReady(event: Event) {
-  const currentTarget = event.currentTarget
-  if (!(currentTarget instanceof HTMLElement)) return
-
-  const el = currentTarget.closest('image-crop')
-  if (!(el instanceof ImageCropElement)) return
-
-  el.loaded = true
-  setInitialPosition(el)
-}
-
 function setInitialPosition(el: ImageCropElement) {
   const {image} = constructedElements.get(el) || {}
   if (!image) return
@@ -289,7 +278,11 @@ class ImageCropElement extends HTMLElement {
     if (!(image instanceof HTMLImageElement)) return
     constructedElements.set(this, {box, image})
 
-    image.addEventListener('load', imageReady)
+    image.addEventListener('load', () => {
+      this.loaded = true
+      setInitialPosition(this)
+    })
+
     this.addEventListener('mouseleave', stopUpdate)
     this.addEventListener('touchend', stopUpdate)
     this.addEventListener('mouseup', stopUpdate)
