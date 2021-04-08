@@ -220,7 +220,7 @@ class ImageCropElement extends HTMLElement {
     cursor: inherit;
   }
   :host([loaded]) .crop-image { display: block; }
-  :host([loaded]) [data-loading-slot],
+  :host([loaded]) ::slotted([data-loading-slot]),
   :host .crop-image {
     display: none;
   }
@@ -281,6 +281,7 @@ class ImageCropElement extends HTMLElement {
     </div>
   </div>
 </div>
+<slot></slot>
 `
 
     const box = shadowRoot.querySelector('[data-crop-box]')
