@@ -210,22 +210,22 @@ class ImageCropElement extends HTMLElement {
     touch-action: none;
     display: block;
   }
-  :host.nesw { cursor: nesw-resize; }
-  :host.nwse { cursor: nwse-resize; }
-  :host.nesw .crop-box,
-  :host.nwse .crop-box {
+  .nesw { cursor: nesw-resize; }
+  .nwse { cursor: nwse-resize; }
+  .nesw .crop-box,
+  .nwse .crop-box {
     cursor: inherit;
   }
   :host([loaded]) .crop-image { display: block; }
   :host([loaded]) ::slotted([data-loading-slot]),
-  :host .crop-image {
+  .crop-image {
     display: none;
   }
-  :host .crop-wrapper {
+  .crop-wrapper {
     position: relative;
     font-size: 0;
   }
-  :host .crop-container {
+  .crop-container {
     user-select: none;
     -ms-user-select: none;
     -moz-user-select: none;
@@ -237,13 +237,13 @@ class ImageCropElement extends HTMLElement {
     width: 100%;
     height: 100%;
   }
-  :host .crop-box {
+  .crop-box {
     position: absolute;
     border: 1px dashed #fff;
     box-sizing: border-box;
     cursor: move;
   }
-  :host .crop-outline {
+  .crop-outline {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -251,8 +251,8 @@ class ImageCropElement extends HTMLElement {
     right: 0;
     outline: 4000px solid rgba(0, 0, 0, .3);
   }
-  :host .handle { position: absolute; }
-  :host .handle:before {
+  .handle { position: absolute; }
+  .handle:before {
     position: absolute;
     display: block;
     padding: 4px;
@@ -261,10 +261,10 @@ class ImageCropElement extends HTMLElement {
     background: #fff;
     border: 1px solid #767676;
   }
-  :host .ne { top: 0; right: 0; cursor: nesw-resize; }
-  :host .nw { top: 0; left: 0; cursor: nwse-resize; }
-  :host .se { bottom: 0; right: 0; cursor: nwse-resize; }
-  :host .sw { bottom: 0; left: 0; cursor: nesw-resize; }
+  .ne { top: 0; right: 0; cursor: nesw-resize; }
+  .nw { top: 0; left: 0; cursor: nwse-resize; }
+  .se { bottom: 0; right: 0; cursor: nwse-resize; }
+  .sw { bottom: 0; left: 0; cursor: nesw-resize; }
 </style>
 <slot></slot>
 <div class="crop-wrapper">
