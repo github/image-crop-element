@@ -61,12 +61,7 @@ function updateCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
   const target = event.target
   if (!(target instanceof HTMLElement)) return
 
-  let el
-  if (target instanceof ImageCropElement) {
-    el = target
-  } else {
-    el = getShadowRootHost(target)
-  }
+  const el = getShadowHost(target)
   if (!(el instanceof ImageCropElement)) return
 
   const {box} = constructedElements.get(el) || {}
@@ -97,15 +92,17 @@ function updateCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
   if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !(event instanceof KeyboardEvent))
 }
 
-function getShadowRootHost(el: Element): ImageCropElement {
-  return (el.getRootNode() as ShadowRoot).host as ImageCropElement
+function getShadowHost(el: HTMLElement) {
+  const rootNode = el.getRootNode()
+  if (!(rootNode instanceof ShadowRoot)) return el
+  return rootNode.host
 }
 
 function startUpdate(event: TouchEvent | MouseEvent) {
   const currentTarget = event.currentTarget
   if (!(currentTarget instanceof HTMLElement)) return
 
-  const el = getShadowRootHost(currentTarget)
+  const el = getShadowHost(currentTarget)
   if (!(el instanceof ImageCropElement)) return
 
   const {box} = constructedElements.get(el) || {}
