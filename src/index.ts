@@ -210,10 +210,10 @@ class ImageCropElement extends HTMLElement {
     touch-action: none;
     display: block;
   }
-  .nesw { cursor: nesw-resize; }
-  .nwse { cursor: nwse-resize; }
-  .nesw .crop-box,
-  .nwse .crop-box {
+  :host(.nesw) { cursor: nesw-resize; }
+  :host(.nwse) { cursor: nwse-resize; }
+  :host(.nesw) .crop-box,
+  :host(.nwse) .crop-box {
     cursor: inherit;
   }
   :host([loaded]) .crop-image { display: block; }
