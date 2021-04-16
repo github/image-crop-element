@@ -16,11 +16,17 @@ $ npm install --save @github/image-crop-element
 <image-crop src="/avatar.jpg"></image-crop>
 ```
 
+### Rounded crop area
+
+```html
+<image-crop src="/avatar.jpg" rounded></image-crop>
+```
+
 ### With loading state
 
 ```html
 <image-crop src="/avatar.jpg">
-  <img src="spinner.gif" alt="" data-loading-slot>
+  <img src="spinner.gif" alt="" data-loading-slot />
 </image-crop>
 ```
 
@@ -48,6 +54,9 @@ document.addEventListener('image-crop-change', function (event){
   )
 })
 ```
+
+## CSS encapsulation
+The elements HTML structure is initialized in a [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM), so it is impossible to apply CSS to it. If you need to change the element's default style for any reason, you should open up a new issue (or a pull request!), describing your use case, and we'll work with you on solving the problem.
 
 ## Browser support
 

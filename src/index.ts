@@ -1,19 +1,3 @@
-const tmpl = document.createElement('template')
-tmpl.innerHTML = `
-  <div class="crop-wrapper">
-    <img width="100%" class="crop-image" alt="">
-    <div class="crop-container">
-      <div data-crop-box class="crop-box">
-        <div class="crop-outline"></div>
-        <div data-direction="nw" class="handle nw"></div>
-        <div data-direction="ne" class="handle ne"></div>
-        <div data-direction="sw" class="handle sw"></div>
-        <div data-direction="se" class="handle se"></div>
-      </div>
-    </div>
-  </div>
-`
-
 const startPositions: WeakMap<ImageCropElement, {startX: number; startY: number}> = new WeakMap()
 const dragStartPositions: WeakMap<ImageCropElement, {dragStartX: number; dragStartY: number}> = new WeakMap()
 const constructedElements: WeakMap<ImageCropElement, {image: HTMLImageElement; box: HTMLElement}> = new WeakMap()
@@ -77,8 +61,9 @@ function updateCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
   const target = event.target
   if (!(target instanceof HTMLElement)) return
 
-  const el = target.closest('image-crop')
+  const el = getShadowHost(target)
   if (!(el instanceof ImageCropElement)) return
+
   const {box} = constructedElements.get(el) || {}
   if (!box) return
 
@@ -107,12 +92,19 @@ function updateCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
   if (deltaX && deltaY) updateDimensions(el, deltaX, deltaY, !(event instanceof KeyboardEvent))
 }
 
+function getShadowHost(el: HTMLElement) {
+  const rootNode = el.getRootNode()
+  if (!(rootNode instanceof ShadowRoot)) return el
+  return rootNode.host
+}
+
 function startUpdate(event: TouchEvent | MouseEvent) {
   const currentTarget = event.currentTarget
   if (!(currentTarget instanceof HTMLElement)) return
 
-  const el = currentTarget.closest('image-crop')
+  const el = getShadowHost(currentTarget)
   if (!(el instanceof ImageCropElement)) return
+
   const {box} = constructedElements.get(el) || {}
   if (!box) return
 
@@ -160,17 +152,6 @@ function updateDimensions(target: ImageCropElement, deltaX: number, deltaY: numb
   box.style.width = `${newSide}px`
   box.style.height = `${newSide}px`
   fireChangeEvent(target, {x, y, width: newSide, height: newSide})
-}
-
-function imageReady(event: Event) {
-  const currentTarget = event.currentTarget
-  if (!(currentTarget instanceof HTMLElement)) return
-
-  const el = currentTarget.closest('image-crop')
-  if (!(el instanceof ImageCropElement)) return
-
-  el.loaded = true
-  setInitialPosition(el)
 }
 
 function setInitialPosition(el: ImageCropElement) {
@@ -221,14 +202,99 @@ function fireChangeEvent(target: ImageCropElement, result: Result) {
 class ImageCropElement extends HTMLElement {
   connectedCallback() {
     if (constructedElements.has(this)) return
-    this.appendChild(document.importNode(tmpl.content, true))
-    const box = this.querySelector('[data-crop-box]')
+
+    const shadowRoot = this.attachShadow({mode: 'open'})
+    shadowRoot.innerHTML = `
+<style>
+  :host { touch-action: none; display: block; }
+  :host(.nesw) { cursor: nesw-resize; }
+  :host(.nwse) { cursor: nwse-resize; }
+  :host(.nesw) .crop-box, :host(.nwse) .crop-box { cursor: inherit; }
+  :host([loaded]) .crop-image { display: block; }
+  :host([loaded]) ::slotted([data-loading-slot]), .crop-image { display: none; }
+
+  .crop-wrapper {
+    position: relative;
+    font-size: 0;
+  }
+  .crop-container {
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    position: absolute;
+    overflow: hidden;
+    z-index: 1;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  :host([rounded]) .crop-box {
+    border-radius: 50%;
+    box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3);
+  }
+  .crop-box {
+    position: absolute;
+    border: 1px dashed #fff;
+    box-sizing: border-box;
+    cursor: move;
+  }
+
+  :host([rounded]) .crop-outline {
+    outline: none;
+  }
+  .crop-outline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    outline: 4000px solid rgba(0, 0, 0, .3);
+  }
+
+  .handle { position: absolute; }
+  :host([rounded]) .handle::before { border-radius: 50%; }
+  .handle:before {
+    position: absolute;
+    display: block;
+    padding: 4px;
+    transform: translate(-50%, -50%);
+    content: ' ';
+    background: #fff;
+    border: 1px solid #767676;
+  }
+  .ne { top: 0; right: 0; cursor: nesw-resize; }
+  .nw { top: 0; left: 0; cursor: nwse-resize; }
+  .se { bottom: 0; right: 0; cursor: nwse-resize; }
+  .sw { bottom: 0; left: 0; cursor: nesw-resize; }
+</style>
+<slot></slot>
+<div class="crop-wrapper">
+  <img width="100%" class="crop-image" alt="">
+  <div class="crop-container">
+    <div data-crop-box class="crop-box">
+      <div class="crop-outline"></div>
+      <div data-direction="nw" class="handle nw"></div>
+      <div data-direction="ne" class="handle ne"></div>
+      <div data-direction="sw" class="handle sw"></div>
+      <div data-direction="se" class="handle se"></div>
+    </div>
+  </div>
+</div>
+`
+
+    const box = shadowRoot.querySelector('[data-crop-box]')
     if (!(box instanceof HTMLElement)) return
-    const image = this.querySelector('img')
+    const image = shadowRoot.querySelector('img')
     if (!(image instanceof HTMLImageElement)) return
     constructedElements.set(this, {box, image})
 
-    image.addEventListener('load', imageReady)
+    image.addEventListener('load', () => {
+      this.loaded = true
+      setInitialPosition(this)
+    })
+
     this.addEventListener('mouseleave', stopUpdate)
     this.addEventListener('touchend', stopUpdate)
     this.addEventListener('mouseup', stopUpdate)

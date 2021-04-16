@@ -2,9 +2,6 @@
 <html lang="en">
 <head>
   <style>
-    .wrapper {
-      margin: 30px auto;
-    }
     .loading {
       background: #f0f0f0;
       text-align: center;
@@ -13,13 +10,12 @@
   </style>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="../src/index.css" rel="stylesheet">
   <!-- <script type="module" src="../dist/index.js"></script> -->
   <script type="module" src="https://unpkg.com/@github/image-crop-element@latest/dist/index.js"></script>
   <title>image-crop-element demo</title>
 </head>
 <body>
-  <image-crop src="./ams.jpg" class="wrapper" tabindex="0">
+  <image-crop src="./ams.jpg" tabindex="0">
     <div data-loading-slot class="loading">loading</div>
     <input type="text" data-image-crop-input="x" name="x" size="4" aria-label="x">
     <input type="text" data-image-crop-input="y" name="y" size="4" aria-label="y">
