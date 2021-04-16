@@ -16,11 +16,17 @@ $ npm install --save @github/image-crop-element
 <image-crop src="/avatar.jpg"></image-crop>
 ```
 
+### Rounded crop area
+
+```html
+<image-crop src="/avatar.jpg" rounded></image-crop>
+```
+
 ### With loading state
 
 ```html
 <image-crop src="/avatar.jpg">
-  <img src="spinner.gif" alt="" data-loading-slot>
+  <img src="spinner.gif" alt="" data-loading-slot />
 </image-crop>
 ```
 

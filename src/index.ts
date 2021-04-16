@@ -206,21 +206,13 @@ class ImageCropElement extends HTMLElement {
     const shadowRoot = this.attachShadow({mode: 'open'})
     shadowRoot.innerHTML = `
 <style>
-  :host {
-    touch-action: none;
-    display: block;
-  }
+  :host { touch-action: none; display: block; }
   :host(.nesw) { cursor: nesw-resize; }
   :host(.nwse) { cursor: nwse-resize; }
-  :host(.nesw) .crop-box,
-  :host(.nwse) .crop-box {
-    cursor: inherit;
-  }
+  :host(.nesw) .crop-box, :host(.nwse) .crop-box { cursor: inherit; }
   :host([loaded]) .crop-image { display: block; }
-  :host([loaded]) ::slotted([data-loading-slot]),
-  .crop-image {
-    display: none;
-  }
+  :host([loaded]) ::slotted([data-loading-slot]), .crop-image { display: none; }
+
   .crop-wrapper {
     position: relative;
     font-size: 0;
@@ -237,11 +229,20 @@ class ImageCropElement extends HTMLElement {
     width: 100%;
     height: 100%;
   }
+
+  :host([rounded]) .crop-box {
+    border-radius: 50%;
+    box-shadow: 0 0 0 500px rgba(0, 0, 0, 0.3);
+  }
   .crop-box {
     position: absolute;
     border: 1px dashed #fff;
     box-sizing: border-box;
     cursor: move;
+  }
+
+  :host([rounded]) .crop-outline {
+    outline: none;
   }
   .crop-outline {
     position: absolute;
@@ -251,7 +252,9 @@ class ImageCropElement extends HTMLElement {
     right: 0;
     outline: 4000px solid rgba(0, 0, 0, .3);
   }
+
   .handle { position: absolute; }
+  :host([rounded]) .handle::before { border-radius: 50%; }
   .handle:before {
     position: absolute;
     display: block;
