@@ -232,7 +232,7 @@ class ImageCropElement extends HTMLElement {
 
   :host([rounded]) .crop-box {
     border-radius: 50%;
-    box-shadow: 0 0 0 500px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3);
   }
   .crop-box {
     position: absolute;
