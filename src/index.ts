@@ -68,7 +68,9 @@ function updateCropArea(event: TouchEvent | MouseEvent | KeyboardEvent) {
   if (!box) return
 
   const rect = el.getBoundingClientRect()
-  let deltaX, deltaY, delta
+  let deltaX
+  let deltaY
+  let delta
   if (event instanceof KeyboardEvent) {
     if (event.key === 'Escape') return setInitialPosition(el)
     if (event.key === '-') delta = -10
@@ -204,6 +206,7 @@ class ImageCropElement extends HTMLElement {
     if (constructedElements.has(this)) return
 
     const shadowRoot = this.attachShadow({mode: 'open'})
+    // eslint-disable-next-line github/no-inner-html
     shadowRoot.innerHTML = `
 <style>
   :host { touch-action: none; display: block; }
