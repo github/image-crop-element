@@ -1,8 +1,12 @@
+import {assert} from '@open-wc/testing'
+import {ImageCropElement} from '../src/index.ts'
+
 describe('image-crop', function () {
   describe('element creation', function () {
     it('creates from document.createElement', function () {
       const el = document.createElement('image-crop')
       assert.equal('IMAGE-CROP', el.nodeName)
+      assert(el instanceof ImageCropElement)
       assert(el instanceof window.ImageCropElement)
     })
 
