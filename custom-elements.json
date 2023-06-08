@@ -1,0 +1,270 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "dist/bundle.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "ImageCropElement",
+          "default": "class extends HTMLElement {\n  static define(tag = \"image-crop\", registry = customElements) {\n    registry.define(tag, this);\n    return this;\n  }\n  connectedCallback() {\n    if (constructedElements.has(this))\n      return;\n    const shadowRoot = this.attachShadow({ mode: \"open\" });\n    shadowRoot.innerHTML = `\n<style>\n  :host { touch-action: none; display: block; }\n  :host(.nesw) { cursor: nesw-resize; }\n  :host(.nwse) { cursor: nwse-resize; }\n  :host(.nesw) .crop-box, :host(.nwse) .crop-box { cursor: inherit; }\n  :host([loaded]) .crop-image { display: block; }\n  :host([loaded]) ::slotted([data-loading-slot]), .crop-image { display: none; }\n\n  .crop-wrapper {\n    position: relative;\n    font-size: 0;\n  }\n  .crop-container {\n    user-select: none;\n    -ms-user-select: none;\n    -moz-user-select: none;\n    -webkit-user-select: none;\n    position: absolute;\n    overflow: hidden;\n    z-index: 1;\n    top: 0;\n    width: 100%;\n    height: 100%;\n  }\n\n  :host([rounded]) .crop-box {\n    border-radius: 50%;\n    box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3);\n  }\n  .crop-box {\n    position: absolute;\n    border: 1px dashed #fff;\n    box-sizing: border-box;\n    cursor: move;\n  }\n\n  :host([rounded]) .crop-outline {\n    outline: none;\n  }\n  .crop-outline {\n    position: absolute;\n    top: 0;\n    bottom: 0;\n    left: 0;\n    right: 0;\n    outline: 4000px solid rgba(0, 0, 0, .3);\n  }\n\n  .handle { position: absolute; }\n  :host([rounded]) .handle::before { border-radius: 50%; }\n  .handle:before {\n    position: absolute;\n    display: block;\n    padding: 4px;\n    transform: translate(-50%, -50%);\n    content: ' ';\n    background: #fff;\n    border: 1px solid #767676;\n  }\n  .ne { top: 0; right: 0; cursor: nesw-resize; }\n  .nw { top: 0; left: 0; cursor: nwse-resize; }\n  .se { bottom: 0; right: 0; cursor: nwse-resize; }\n  .sw { bottom: 0; left: 0; cursor: nesw-resize; }\n</style>\n<slot></slot>\n<div class=\"crop-wrapper\">\n  <img width=\"100%\" class=\"crop-image\" alt=\"\">\n  <div class=\"crop-container\">\n    <div data-crop-box class=\"crop-box\">\n      <div class=\"crop-outline\"></div>\n      <div data-direction=\"nw\" class=\"handle nw\"></div>\n      <div data-direction=\"ne\" class=\"handle ne\"></div>\n      <div data-direction=\"sw\" class=\"handle sw\"></div>\n      <div data-direction=\"se\" class=\"handle se\"></div>\n    </div>\n  </div>\n</div>\n`;\n    const box = shadowRoot.querySelector(\"[data-crop-box]\");\n    if (!(box instanceof HTMLElement))\n      return;\n    const image = shadowRoot.querySelector(\"img\");\n    if (!(image instanceof HTMLImageElement))\n      return;\n    constructedElements.set(this, { box, image });\n    image.addEventListener(\"load\", () => {\n      this.loaded = true;\n      setInitialPosition(this);\n    });\n    this.addEventListener(\"mouseleave\", stopUpdate);\n    this.addEventListener(\"touchend\", stopUpdate);\n    this.addEventListener(\"mouseup\", stopUpdate);\n    box.addEventListener(\"mousedown\", startUpdate);\n    box.addEventListener(\"touchstart\", startUpdate, { passive: true });\n    this.addEventListener(\"keydown\", moveCropArea);\n    this.addEventListener(\"keydown\", updateCropArea);\n    if (this.src)\n      image.src = this.src;\n  }\n  static get observedAttributes() {\n    return [\"src\"];\n  }\n  get src() {\n    return this.getAttribute(\"src\");\n  }\n  set src(val) {\n    if (val) {\n      this.setAttribute(\"src\", val);\n    } else {\n      this.removeAttribute(\"src\");\n    }\n  }\n  get loaded() {\n    return this.hasAttribute(\"loaded\");\n  }\n  set loaded(val) {\n    if (val) {\n      this.setAttribute(\"loaded\", \"\");\n    } else {\n      this.removeAttribute(\"loaded\");\n    }\n  }\n  attributeChangedCallback(attribute, oldValue, newValue) {\n    const { image } = constructedElements.get(this) || {};\n    if (attribute === \"src\") {\n      this.loaded = false;\n      if (image)\n        image.src = newValue;\n    }\n  }\n}"
+        },
+        {
+          "kind": "variable",
+          "name": "dist_default",
+          "default": "ImageCropElement"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ImageCropElement",
+          "declaration": {
+            "name": "ImageCropElement",
+            "module": "dist/bundle.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "dist_default",
+            "module": "dist/bundle.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/image-crop-element-define.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ImageCropElement",
+            "module": "dist/image-crop-element-define.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "./image-crop-element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/image-crop-element.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ImageCropElement",
+          "members": [
+            {
+              "kind": "method",
+              "name": "define",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "tag",
+                  "default": "'image-crop'"
+                },
+                {
+                  "name": "registry",
+                  "default": "customElements"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "src"
+            },
+            {
+              "kind": "field",
+              "name": "loaded"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "src"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ImageCropElement",
+          "declaration": {
+            "name": "ImageCropElement",
+            "module": "dist/image-crop-element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ImageCropElement",
+          "declaration": {
+            "name": "ImageCropElement",
+            "module": "dist/index.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ImageCropElement",
+            "module": "dist/index.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "./image-crop-element-define.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/image-crop-element-define.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ImageCropElement",
+            "module": "src/image-crop-element-define.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "./image-crop-element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/image-crop-element.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ImageCropElement",
+          "members": [
+            {
+              "kind": "method",
+              "name": "define",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "tag",
+                  "default": "'image-crop'"
+                },
+                {
+                  "name": "registry",
+                  "default": "customElements"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "src",
+              "type": {
+                "text": "string | null"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "loaded",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "src"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ImageCropElement",
+          "declaration": {
+            "name": "ImageCropElement",
+            "module": "src/image-crop-element.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ImageCropElement",
+          "declaration": {
+            "name": "ImageCropElement",
+            "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ImageCropElement",
+            "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "./image-crop-element-define.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "test/test.js",
+      "declarations": [],
+      "exports": []
+    }
+  ]
+}

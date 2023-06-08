@@ -3,21 +3,32 @@
   "version": "5.0.0",
   "description": "Select area for cropping an image. This does not actually crop.",
   "main": "dist/index.js",
-  "type": "module",
   "module": "dist/index.js",
+  "type": "module",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "index.css",
+    "index.d.ts"
   ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./define": "./dist/index.js",
+    "./image-crop": "./dist/image-crop-element.js",
+    "./image-crop/define": "./dist/image-crop-element-define.js"
+  },
   "scripts": {
     "clean": "rm -rf dist",
-    "lint": "eslint src/*.ts",
+    "lint": "eslint . --ext .js,.ts && tsc --noEmit",
+    "lint:fix": "npm run lint -- --fix",
     "prebuild": "npm run clean && npm run lint && mkdir dist",
-    "build": "tsc",
-    "pretest": "npm run build",
+    "bundle": "esbuild --bundle dist/index.js --keep-names --outfile=dist/bundle.js --format=esm",
+    "build": "tsc && npm run bundle && npm run manifest",
     "prepublishOnly": "npm run build",
-    "test": "karma start test/karma.config.cjs",
-    "postpublish": "npm publish --ignore-scripts --@github:registry='https://npm.pkg.github.com'"
+    "pretest": "npm run build",
+    "test": "web-test-runner",
+    "postpublish": "npm publish --ignore-scripts --@github:registry='https://npm.pkg.github.com'",
+    "manifest": "custom-elements-manifest analyze"
   },
   "keywords": [
     "crop",
@@ -25,21 +36,20 @@
     "custom element"
   ],
   "license": "MIT",
-  "prettier": "@github/prettier-config",
   "repository": "github/image-crop-element",
+  "prettier": "@github/prettier-config",
   "devDependencies": {
-    "@github/prettier-config": "0.0.4",
-    "chai": "^4.3.4",
-    "chromium": "^3.0.3",
-    "eslint": "^8.17.0",
-    "eslint-plugin-github": "^4.3.6",
-    "karma": "^6.2.0",
-    "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-firefox-launcher": "^2.1.0",
-    "karma-mocha": "^2.0.1",
-    "karma-mocha-reporter": "^2.2.5",
-    "mocha": "^10.0.0",
-    "typescript": "^4.2.3"
-  }
+    "@custom-elements-manifest/analyzer": "^0.8.3",
+    "@github/prettier-config": "^0.0.6",
+    "@open-wc/testing": "^3.1.8",
+    "@web/dev-server-esbuild": "^0.4.1",
+    "@web/test-runner": "^0.16.1",
+    "@web/test-runner-playwright": "^0.10.0",
+    "esbuild": "^0.17.19",
+    "eslint": "^8.42.0",
+    "eslint-plugin-custom-elements": "^0.0.8",
+    "eslint-plugin-github": "^4.8.0",
+    "typescript": "^5.1.3"
+  },
+  "customElements": "custom-elements.json"
 }
