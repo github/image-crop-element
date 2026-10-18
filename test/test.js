@@ -33,6 +33,46 @@ describe('image-crop', function () {
       document.body.innerHTML = ''
     })
 
+    for (const gesture of ['drag', 'resize']) {
+      for (const ending of ['touchcancel', 'touchend']) {
+        it(`stops ${gesture} after ${ending}`, async function () {
+          const ce = document.querySelector('image-crop')
+          const image = ce.shadowRoot.querySelector('img')
+          const loaded = new Promise(resolve => image.addEventListener('load', resolve, {once: true}))
+          ce.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="123" height="123"/>'
+          await loaded
+
+          const box = ce.shadowRoot.querySelector('[data-crop-box]')
+          box.style.cssText = 'left: 10px; top: 10px; width: 60px; height: 60px'
+          const target = gesture === 'resize' ? box.querySelector('[data-direction="se"]') : box
+          const touch = (type, position) => {
+            const point = new Touch({
+              identifier: 1,
+              target,
+              clientX: position,
+              clientY: position,
+              pageX: position,
+              pageY: position,
+            })
+            target.dispatchEvent(new TouchEvent(type, {bubbles: true, composed: true, changedTouches: [point]}))
+          }
+          let changes = 0
+          ce.addEventListener('image-crop-change', () => changes++)
+          touch('touchstart', 50)
+          touch('touchmove', 55)
+          touch('touchmove', 60)
+          assert.isAbove(changes, 0)
+
+          const previous = box.style.cssText
+          const previousChanges = changes
+          touch(ending, 60)
+          touch('touchmove', 80)
+          assert.equal(box.style.cssText, previous)
+          assert.equal(changes, previousChanges)
+        })
+      }
+    }
+
     it('fires a change event and updates input', async function () {
       const ce = document.querySelector('image-crop')
       const listener = new Promise(resolve => ce.addEventListener('image-crop-change', resolve))

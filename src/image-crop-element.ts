@@ -317,6 +317,7 @@ export class ImageCropElement extends HTMLElement {
     this.addEventListener('mouseleave', stopUpdate)
     // eslint-disable-next-line github/require-passive-events
     this.addEventListener('touchend', stopUpdate)
+    this.addEventListener('touchcancel', stopUpdate)
     this.addEventListener('mouseup', stopUpdate)
     box.addEventListener('mousedown', startUpdate)
     box.addEventListener('touchstart', startUpdate, {passive: true})
