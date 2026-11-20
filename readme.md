@@ -8,6 +8,10 @@ This loads an image and creates a crop area that user can modify. An event is fi
 $ npm install --save @github/image-crop-element
 ```
 
+## Development
+
+Use Node.js 22 or later to build and test this package. CI and publishing use Node.js 22.
+
 ## Usage
 
 ### Plain
